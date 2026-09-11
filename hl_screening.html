@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HL Signale">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<title>Hyperliquid Signal-Screen</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0f14;
+    --card: #131a22;
+    --border: #232d38;
+    --text: #e6edf3;
+    --muted: #8b9aab;
+    --long: #22c55e;
+    --short: #ef4444;
+    --accent: #3b82f6;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  header {
+    padding: 16px 16px 12px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  h1 { font-size: 18px; margin: 0 0 2px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: 12.5px; }
+  .controls { display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  button {
+    background: var(--accent); color: white; border: none; border-radius: 10px;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; }
+  .status { font-size: 12.5px; color: var(--muted); flex: 1; min-width: 120px; }
+  main { padding: 12px 12px 32px; max-width: 640px; margin: 0 auto; }
+  .note {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px 12px; font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .name { font-size: 16px; font-weight: 700; }
+  .rank { color: var(--muted); font-size: 12px; margin-right: 6px; }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+  .badge.LONG { background: rgba(34,197,94,0.15); color: var(--long); }
+  .badge.SHORT { background: rgba(239,68,68,0.15); color: var(--short); }
+  .score { font-size: 18px; font-weight: 800; }
+  .score.LONG { color: var(--long); }
+  .score.SHORT { color: var(--short); }
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    margin-top: 10px; font-size: 11.5px; color: var(--muted);
+  }
+  .metrics div b { display: block; color: var(--text); font-size: 13px; font-weight: 600; }
+  .warn { margin-top: 8px; font-size: 11.5px; color: var(--warn); }
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 13px; }
+  .progress {
+    height: 4px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden;
+  }
+  .progress > div { height: 100%; background: var(--accent); width: 0%; transition: width .2s; }
+  .updated { font-size: 11px; color: var(--muted); margin: 6px 0 14px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Hyperliquid Signal-Screen</h1>
+  <div class="sub">Top 10 Long/Short nach Signalstärke · letzte 7 Tage · 1h-Basis</div>
+  <div class="controls">
+    <button id="runBtn" onclick="runScreen()">Aktualisieren</button>
+    <div class="status" id="status">Bereit.</div>
+  </div>
+  <div class="progress"><div id="progressBar"></div></div>
+</header>
+
+<main>
+  <div class="note">
+    Testlogik (v0.1, vereinfacht): PPO, MACD-Crossover, RSI(14)+Divergenz, Funding-Crowding
+    und Volumen-Multiplikator wie im Konzept-Dokument, jeweils Long- und Short-Score getrennt
+    berechnet. Liquiditätsfilter (≥1 Mio USD 24h-Volumen &amp; Open Interest) aktiv, Konfluenz-/
+    Regime-Hard-Gates sowie der OI-Änderungs-Faktor sind in diesem Testlauf bewusst deaktiviert
+    bzw. nicht berechenbar (keine einfache OI-Zeitreihe über die API) — sortiert wird rein nach
+    Signalintensität.
+  </div>
+  <div id="updated" class="updated"></div>
+  <div id="results"><div class="empty">Noch keine Daten geladen. Tippe oben auf "Aktualisieren".</div></div>
+</main>
+
+<script>
+const API_URL = "https://api.hyperliquid.xyz/info";
+const MIN_VOL_USD = 1_000_000;
+const MIN_OI_USD = 1_000_000;
+const FUNDING_CLAMP_8H = 0.0005;
+const FUNDING_CROWD_THRESHOLD = 0.8 * FUNDING_CLAMP_8H;
+const HOURS_BACK = 24 * 7;
+const CONCURRENCY = 5;
+
+function setStatus(txt) { document.getElementById('status').textContent = txt; }
+function setProgress(pct) { document.getElementById('progressBar').style.width = pct + '%'; }
+
+async function post(body) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+async function getUniverseAndCtxs() {
+  const [meta, assetCtxs] = await post({ type: "metaAndAssetCtxs" });
+  let capped = [];
+  try { capped = await post({ type: "perpsAtOpenInterestCap" }); } catch (e) { capped = []; }
+  const cappedSet = new Set(Array.isArray(capped) ? capped : []);
+  const out = [];
+  meta.universe.forEach((u, i) => {
+    if (u.isDelisted) return;
+    const ctx = assetCtxs[i];
+    const markPx = parseFloat(ctx.markPx);
+    const dayVol = parseFloat(ctx.dayNtlVlm);
+    const oi = parseFloat(ctx.openInterest) * markPx;
+    const funding = parseFloat(ctx.funding);
+    if (dayVol < MIN_VOL_USD || oi < MIN_OI_USD) return;
+    if (cappedSet.has(u.name)) return;
+    out.push({ name: u.name, markPx, dayVol, oi, funding, maxLeverage: u.maxLeverage });
+  });
+  return out;
+}
+
+async function getHourlyCandles(coin) {
+  const end = Date.now();
+  const start = end - HOURS_BACK * 3600 * 1000;
+  return post({ type: "candleSnapshot", req: { coin, interval: "1h", startTime: start, endTime: end } });
+}
+
+function ema(values, period) {
+  const out = new Array(values.length).fill(null);
+  if (values.length < period) return out;
+  const k = 2 / (period + 1);
+  let seed = 0;
+  for (let i = 0; i < period; i++) seed += values[i];
+  seed /= period;
+  out[period - 1] = seed;
+  let prev = seed;
+  for (let i = period; i < values.length; i++) {
+    prev = values[i] * k + prev * (1 - k);
+    out[i] = prev;
+  }
+  return out;
+}
+
+function rsi(closes, period = 14) {
+  const out = new Array(closes.length).fill(null);
+  if (closes.length < period + 1) return out;
+  const gains = [], losses = [];
+  for (let i = 1; i < closes.length; i++) {
+    const diff = closes[i] - closes[i - 1];
+    gains.push(Math.max(diff, 0));
+    losses.push(Math.max(-diff, 0));
+  }
+  let avgGain = 0, avgLoss = 0;
+  for (let i = 0; i < period; i++) { avgGain += gains[i]; avgLoss += losses[i]; }
+  avgGain /= period; avgLoss /= period;
+  let rs = avgLoss === 0 ? Infinity : avgGain / avgLoss;
+  out[period] = 100 - 100 / (1 + rs);
+  for (let i = period; i < gains.length; i++) {
+    avgGain = (avgGain * (period - 1) + gains[i]) / period;
+    avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
+    rs = avgLoss === 0 ? Infinity : avgGain / avgLoss;
+    out[i + 1] = 100 - 100 / (1 + rs);
+  }
+  return out;
+}
+
+function findSwings(series, lookback = 3) {
+  const highs = [], lows = [];
+  for (let i = lookback; i < series.length - lookback; i++) {
+    const window = series.slice(i - lookback, i + lookback + 1);
+    const mx = Math.max(...window), mn = Math.min(...window);
+    if (series[i] === mx) highs.push(i);
+    if (series[i] === mn) lows.push(i);
+  }
+  return { highs, lows };
+}
+
+function scoreAsset(asset, candles) {
+  const closes = candles.map(c => parseFloat(c.c));
+  const vols = candles.map(c => parseFloat(c.v));
+  if (closes.length < 30) return null;
+
+  const ema12 = ema(closes, 12), ema26 = ema(closes, 26);
+  const ema20 = ema(closes, 20), ema50 = closes.length >= 50 ? ema(closes, 50) : new Array(closes.length).fill(null);
+  const rsi14 = rsi(closes, 14);
+  const last = closes.length - 1;
+  if (ema12[last] === null || ema26[last] === null || rsi14[last] === null) return null;
+
+  const ppo = (ema12[last] - ema26[last]) / ema26[last] * 100;
+
+  const macdLine = closes.map((_, i) => (ema12[i] !== null && ema26[i] !== null) ? ema12[i] - ema26[i] : null);
+  const validIdx = macdLine.map((v, i) => v !== null ? i : -1).filter(i => i >= 0);
+  const validMacd = validIdx.map(i => macdLine[i]);
+  const macdSignal = validMacd.length >= 9 ? ema(validMacd, 9) : [];
+
+  let bullishCrossRecent = false, bearishCrossRecent = false;
+  if (macdSignal.length >= 4) {
+    for (let i = Math.max(1, macdSignal.length - 3); i < macdSignal.length; i++) {
+      if (macdSignal[i - 1] === null || macdSignal[i] === null) continue;
+      const prevDiff = validMacd[i - 1] - macdSignal[i - 1];
+      const currDiff = validMacd[i] - macdSignal[i];
+      if (prevDiff <= 0 && currDiff > 0) bullishCrossRecent = true;
+      if (prevDiff >= 0 && currDiff < 0) bearishCrossRecent = true;
+    }
+  }
+
+  const uptrendCtx = ema50[last] !== null && closes[last] > ema20[last] && ema20[last] > ema50[last];
+  const downtrendCtx = ema50[last] !== null && closes[last] < ema20[last] && ema20[last] < ema50[last];
+
+  const volAvg20 = vols.slice(-20).reduce((a, b) => a + b, 0) / 20;
+  const volRatio = volAvg20 > 0 ? vols[last] / volAvg20 : 1.0;
+  const volMult = volRatio > 1.5 ? 1.2 : (volRatio < 0.5 ? 0.8 : 1.0);
+
+  const { highs: priceHighs, lows: priceLows } = findSwings(closes, 3);
+  let divBullish = 0, divBearish = 0;
+  if (priceLows.length >= 2) {
+    const i1 = priceLows[priceLows.length - 2], i2 = priceLows[priceLows.length - 1];
+    if (closes[i2] < closes[i1] && rsi14[i2] !== null && rsi14[i1] !== null && rsi14[i2] > rsi14[i1]) divBullish = 1.5;
+  }
+  if (priceHighs.length >= 2) {
+    const i1 = priceHighs[priceHighs.length - 2], i2 = priceHighs[priceHighs.length - 1];
+    if (closes[i2] > closes[i1] && rsi14[i2] !== null && rsi14[i1] !== null && rsi14[i2] < rsi14[i1]) divBearish = 1.5;
+  }
+
+  const funding = asset.funding;
+  const r = rsi14[last];
+  const warnings = [];
+
+  // LONG
+  let longScore = 0;
+  if (ppo > 0) {
+    if (ppo >= 0.5 && ppo <= 1.0) longScore += 1;
+    else if (ppo > 1.0) longScore += 2;
+  }
+  if (bullishCrossRecent) longScore += 1;
+  if (uptrendCtx && r >= 50 && r <= 70) longScore += 1;
+  else if (r > 70) warnings.push("RSI>70 überhitzt");
+  longScore += divBullish;
+  if (divBearish) longScore -= divBearish;
+  if (funding > FUNDING_CROWD_THRESHOLD) { longScore -= 1; warnings.push("Funding-Crowding gegen Long"); }
+  longScore *= volMult;
+
+  // SHORT
+  let shortScore = 0;
+  if (ppo < 0) {
+    if (Math.abs(ppo) >= 0.5 && Math.abs(ppo) <= 1.0) shortScore -= 1;
+    else if (Math.abs(ppo) > 1.0) shortScore -= 2;
+  }
+  if (bearishCrossRecent) shortScore -= 1;
+  if (downtrendCtx && r >= 30 && r <= 50) shortScore -= 1;
+  else if (r < 30) warnings.push("RSI<30 überverkauft, Bounce-Risiko");
+  shortScore -= divBearish;
+  if (divBullish) shortScore += divBullish;
+  if (funding < -FUNDING_CROWD_THRESHOLD) { shortScore += 1; warnings.push("Funding-Crowding gegen Short (bereits überfüllt)"); }
+  shortScore *= volMult;
+
+  return {
+    name: asset.name, markPx: asset.markPx, ppo, rsi: r, funding,
+    longScore: Math.round(longScore * 100) / 100,
+    shortScore: Math.round(shortScore * 100) / 100,
+    volMult, warnings
+  };
+}
+
+async function runScreen() {
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  setProgress(0);
+  document.getElementById('results').innerHTML = '';
+  try {
+    setStatus('Lade Universe & Liquiditätsdaten…');
+    const assets = await getUniverseAndCtxs();
+    setStatus(`${assets.length} Assets liquide genug. Lade 7-Tage-Kerzen…`);
+
+    const results = [];
+    let done = 0;
+    for (let i = 0; i < assets.length; i += CONCURRENCY) {
+      const batch = assets.slice(i, i + CONCURRENCY);
+      const settled = await Promise.allSettled(batch.map(a => getHourlyCandles(a.name)));
+      settled.forEach((res, idx) => {
+        done++;
+        if (res.status === 'fulfilled') {
+          const r = scoreAsset(batch[idx], res.value);
+          if (r) results.push(r);
+        }
+      });
+      setProgress(Math.round(done / assets.length * 100));
+      setStatus(`Lade Kerzen… ${done}/${assets.length}`);
+      await new Promise(r => setTimeout(r, 120));
+    }
+
+    const ranked = results.map(r => {
+      const long = Math.abs(r.longScore) >= Math.abs(r.shortScore);
+      return { ...r, direction: long ? 'LONG' : 'SHORT', score: long ? r.longScore : r.shortScore };
+    }).sort((a, b) => Math.abs(b.score) - Math.abs(a.score)).slice(0, 10);
+
+    renderResults(ranked);
+    setStatus(`Fertig. ${assets.length} Assets geprüft, ${results.length} bewertet.`);
+    document.getElementById('updated').textContent =
+      'Letzte Aktualisierung: ' + new Date().toLocaleString('de-DE');
+  } catch (e) {
+    setStatus('Fehler: ' + e.message);
+    document.getElementById('results').innerHTML =
+      `<div class="empty">Konnte Daten nicht laden (${e.message}).<br>Prüfe deine Internetverbindung und versuche es erneut.</div>`;
+  } finally {
+    btn.disabled = false;
+    setProgress(100);
+  }
+}
+
+function renderResults(ranked) {
+  const el = document.getElementById('results');
+  if (!ranked.length) {
+    el.innerHTML = '<div class="empty">Keine Signale gefunden.</div>';
+    return;
+  }
+  el.innerHTML = ranked.map((r, i) => `
+    <div class="card">
+      <div class="row1">
+        <div><span class="rank">${i + 1}.</span><span class="name">${r.name}</span></div>
+        <span class="badge ${r.direction}">${r.direction}</span>
+      </div>
+      <div class="row1" style="margin-top:4px;">
+        <div class="score ${r.direction}">${r.score > 0 ? '+' : ''}${r.score.toFixed(2)}</div>
+        <div style="color:var(--muted); font-size:12.5px;">$${formatPrice(r.markPx)}</div>
+      </div>
+      <div class="metrics">
+        <div>PPO<b>${r.ppo >= 0 ? '+' : ''}${r.ppo.toFixed(2)}%</b></div>
+        <div>RSI<b>${r.rsi.toFixed(1)}</b></div>
+        <div>Funding<b>${(r.funding * 100).toFixed(4)}%</b></div>
+        <div>Vol<b>×${r.volMult}</b></div>
+      </div>
+      ${r.warnings.length ? `<div class="warn">${r.warnings.join(' · ')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function formatPrice(p) {
+  if (p >= 100) return p.toFixed(2);
+  if (p >= 1) return p.toFixed(4);
+  return p.toPrecision(4);
+}
+</script>
+
+</body>
+</html>
