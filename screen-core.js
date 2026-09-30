@@ -5,7 +5,8 @@ const API_URL = "https://api.hyperliquid.xyz/info";
 const MIN_VOL_USD = 1_000_000;
 const MIN_OI_USD = 1_000_000;
 const FUNDING_CLAMP_8H = 0.0005;
-const FUNDING_CROWD_THRESHOLD = 0.8 * FUNDING_CLAMP_8H;
+// Hyperliquid liefert die Funding-Rate pro STUNDE; die Schwelle ist als 8h-Wert definiert -> durch 8 teilen.
+const FUNDING_CROWD_THRESHOLD = 0.8 * FUNDING_CLAMP_8H / 8;   // = 0,005 % pro Stunde (Fix ab 30.09.2026)
 const HOURS_BACK = 24 * 7;
 const CONCURRENCY = 5;
 
