@@ -1,0 +1,5 @@
+run_ts,rank,name,dex,direction,score,long_score,short_score,price,ppo_pct,rsi,funding,vol_mult,warnings
+2026-09-30T11:08:18.604Z,1,BTC,,LONG,-1.5,-1.5,-1.5,100,0.1003,73.78,0.0000125,1,RSI>70 überhitzt
+2026-09-30T11:08:18.604Z,2,GOLD,,LONG,-1.5,-1.5,-1.5,100,0.1003,73.78,0.0000125,1,RSI>70 überhitzt
+2026-09-30T11:08:18.604Z,3,xyz:BTC,xyz,LONG,-1.5,-1.5,-1.5,100,0.1003,73.78,0.0000125,1,RSI>70 überhitzt
+2026-09-30T11:08:18.604Z,4,xyz:GOLD,xyz,LONG,-1.5,-1.5,-1.5,100,0.1003,73.78,0.0000125,1,RSI>70 überhitzt

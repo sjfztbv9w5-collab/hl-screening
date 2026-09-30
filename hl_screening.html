@@ -60,6 +60,8 @@
   .updated { font-size: 11.5px; color: var(--muted); margin: 2px 0 10px; text-align: center; line-height: 1.5; }
   .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 13px; line-height: 1.5; }
 
+  .exports { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
+  .exports button { padding: 6px 10px; font-size: 12px; }
   .filters { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; }
   .chip {
     background: var(--card); border: 1px solid var(--border); color: var(--muted);
@@ -140,6 +142,12 @@
       deaktiviert. Sortiert nach Signalintensität; Pfeile zeigen die Platzänderung zur vorherigen Aktualisierung.
     </div>
     <div id="updated" class="updated"></div>
+    <div class="exports">
+      <button class="ghost" onclick="exportRaw()">Rohdaten</button>
+      <button class="ghost" onclick="exportScoring()">Scoring CSV</button>
+      <button class="ghost" onclick="exportHistory()">Verlauf CSV</button>
+      <button class="ghost" onclick="exportAll()">Alles (1 Datei)</button>
+    </div>
     <div class="filters">
       <button class="chip active" data-f="ALL" onclick="setFilter('ALL')">Alle</button>
       <button class="chip" data-f="LONG" onclick="setFilter('LONG')">Long</button>
@@ -151,15 +159,8 @@
   <div id="view-hist" style="display:none"></div>
 </main>
 
+<script src="screen-core.js"></script>
 <script>
-const API_URL = "https://api.hyperliquid.xyz/info";
-const MIN_VOL_USD = 1_000_000;
-const MIN_OI_USD = 1_000_000;
-const FUNDING_CLAMP_8H = 0.0005;
-const FUNDING_CROWD_THRESHOLD = 0.8 * FUNDING_CLAMP_8H;
-const HOURS_BACK = 24 * 7;
-const CONCURRENCY = 5;
-
 const HIST_KEY = "hlScreenHistory_v1";   // alle Läufe (kompakt: Name, Score, Richtung)
 const LAST_KEY = "hlScreenLast_v1";      // letzter Lauf mit allen Kennzahlen
 const MAX_RUNS = 60;
@@ -167,7 +168,7 @@ const CHART_RUNS = 8;
 const PALETTE = ['#3b82f6','#22c55e','#ef4444','#f59e0b','#a855f7','#06b6d4','#ec4899','#84cc16',
                  '#f97316','#14b8a6','#eab308','#8b5cf6','#f43f5e','#10b981','#60a5fa'];
 
-const state = { tab: 'rank', filter: 'ALL', query: '', current: null, chartMode: 'top', highlight: null, baseTs: null };
+const state = { raw: null, tab: 'rank', filter: 'ALL', query: '', current: null, chartMode: 'top', highlight: null, baseTs: null };
 let memHistory = null;
 let storageOk = true;
 
@@ -215,204 +216,6 @@ function fmtDur(ms) {
 }
 function fmtAgo(ts) { const ms = Date.now() - ts; return ms < 60000 ? 'gerade eben' : 'vor ' + fmtDur(ms); }
 
-// ---------- API ----------
-async function post(body) {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
-}
-
-// Alle Perp-DEXs: Haupt-DEX (Krypto) + HIP-3-DEXs (Aktien, Rohstoffe, Indizes, FX …).
-// HIP-3-Assets heißen "dex:NAME" (z. B. "xyz:GOLD") und werden auch so für Kerzen abgefragt.
-async function getDexList() {
-  const dexes = [''];
-  try {
-    const list = await post({ type: "perpDexs" });
-    if (Array.isArray(list)) list.forEach(d => { if (d && d.name) dexes.push(d.name); });
-  } catch (e) {}
-  return dexes;
-}
-
-async function getDexAssets(dex) {
-  const dexArg = dex ? { dex } : {};
-  const [meta, assetCtxs] = await post({ type: "metaAndAssetCtxs", ...dexArg });
-  let capped = [];
-  try { capped = await post({ type: "perpsAtOpenInterestCap", ...dexArg }); } catch (e) { capped = []; }
-  const cappedSet = new Set(Array.isArray(capped) ? capped : []);
-  const out = [];
-  meta.universe.forEach((u, i) => {
-    if (u.isDelisted) return;
-    const ctx = assetCtxs[i];
-    if (!ctx) return;
-    const markPx = parseFloat(ctx.markPx);
-    const dayVol = parseFloat(ctx.dayNtlVlm);
-    const oi = parseFloat(ctx.openInterest) * markPx;
-    const funding = parseFloat(ctx.funding);
-    if (!(dayVol >= MIN_VOL_USD) || !(oi >= MIN_OI_USD)) return;
-    if (cappedSet.has(u.name)) return;
-    out.push({ name: u.name, dex, markPx, dayVol, oi, funding, maxLeverage: u.maxLeverage });
-  });
-  return out;
-}
-
-async function getUniverseAndCtxs() {
-  const dexes = await getDexList();
-  const out = [];
-  for (const dex of dexes) {
-    try { out.push(...await getDexAssets(dex)); }
-    catch (e) { if (dex === '') throw e; }   // Fehler im Haupt-DEX abbrechen, bei HIP-3 überspringen
-  }
-  return out;
-}
-
-async function getHourlyCandles(coin) {
-  const end = Date.now();
-  const start = end - HOURS_BACK * 3600 * 1000;
-  return post({ type: "candleSnapshot", req: { coin, interval: "1h", startTime: start, endTime: end } });
-}
-
-// ---------- Indikatoren (unverändert) ----------
-function ema(values, period) {
-  const out = new Array(values.length).fill(null);
-  if (values.length < period) return out;
-  const k = 2 / (period + 1);
-  let seed = 0;
-  for (let i = 0; i < period; i++) seed += values[i];
-  seed /= period;
-  out[period - 1] = seed;
-  let prev = seed;
-  for (let i = period; i < values.length; i++) {
-    prev = values[i] * k + prev * (1 - k);
-    out[i] = prev;
-  }
-  return out;
-}
-
-function rsi(closes, period = 14) {
-  const out = new Array(closes.length).fill(null);
-  if (closes.length < period + 1) return out;
-  const gains = [], losses = [];
-  for (let i = 1; i < closes.length; i++) {
-    const diff = closes[i] - closes[i - 1];
-    gains.push(Math.max(diff, 0));
-    losses.push(Math.max(-diff, 0));
-  }
-  let avgGain = 0, avgLoss = 0;
-  for (let i = 0; i < period; i++) { avgGain += gains[i]; avgLoss += losses[i]; }
-  avgGain /= period; avgLoss /= period;
-  let rs = avgLoss === 0 ? Infinity : avgGain / avgLoss;
-  out[period] = 100 - 100 / (1 + rs);
-  for (let i = period; i < gains.length; i++) {
-    avgGain = (avgGain * (period - 1) + gains[i]) / period;
-    avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
-    rs = avgLoss === 0 ? Infinity : avgGain / avgLoss;
-    out[i + 1] = 100 - 100 / (1 + rs);
-  }
-  return out;
-}
-
-function findSwings(series, lookback = 3) {
-  const highs = [], lows = [];
-  for (let i = lookback; i < series.length - lookback; i++) {
-    const window = series.slice(i - lookback, i + lookback + 1);
-    const mx = Math.max(...window), mn = Math.min(...window);
-    if (series[i] === mx) highs.push(i);
-    if (series[i] === mn) lows.push(i);
-  }
-  return { highs, lows };
-}
-
-function scoreAsset(asset, candles) {
-  const closes = candles.map(c => parseFloat(c.c));
-  const vols = candles.map(c => parseFloat(c.v));
-  if (closes.length < 30) return null;
-
-  const ema12 = ema(closes, 12), ema26 = ema(closes, 26);
-  const ema20 = ema(closes, 20), ema50 = closes.length >= 50 ? ema(closes, 50) : new Array(closes.length).fill(null);
-  const rsi14 = rsi(closes, 14);
-  const last = closes.length - 1;
-  if (ema12[last] === null || ema26[last] === null || rsi14[last] === null) return null;
-
-  const ppo = (ema12[last] - ema26[last]) / ema26[last] * 100;
-
-  const macdLine = closes.map((_, i) => (ema12[i] !== null && ema26[i] !== null) ? ema12[i] - ema26[i] : null);
-  const validIdx = macdLine.map((v, i) => v !== null ? i : -1).filter(i => i >= 0);
-  const validMacd = validIdx.map(i => macdLine[i]);
-  const macdSignal = validMacd.length >= 9 ? ema(validMacd, 9) : [];
-
-  let bullishCrossRecent = false, bearishCrossRecent = false;
-  if (macdSignal.length >= 4) {
-    for (let i = Math.max(1, macdSignal.length - 3); i < macdSignal.length; i++) {
-      if (macdSignal[i - 1] === null || macdSignal[i] === null) continue;
-      const prevDiff = validMacd[i - 1] - macdSignal[i - 1];
-      const currDiff = validMacd[i] - macdSignal[i];
-      if (prevDiff <= 0 && currDiff > 0) bullishCrossRecent = true;
-      if (prevDiff >= 0 && currDiff < 0) bearishCrossRecent = true;
-    }
-  }
-
-  const uptrendCtx = ema50[last] !== null && closes[last] > ema20[last] && ema20[last] > ema50[last];
-  const downtrendCtx = ema50[last] !== null && closes[last] < ema20[last] && ema20[last] < ema50[last];
-
-  const volAvg20 = vols.slice(-20).reduce((a, b) => a + b, 0) / 20;
-  const volRatio = volAvg20 > 0 ? vols[last] / volAvg20 : 1.0;
-  const volMult = volRatio > 1.5 ? 1.2 : (volRatio < 0.5 ? 0.8 : 1.0);
-
-  const { highs: priceHighs, lows: priceLows } = findSwings(closes, 3);
-  let divBullish = 0, divBearish = 0;
-  if (priceLows.length >= 2) {
-    const i1 = priceLows[priceLows.length - 2], i2 = priceLows[priceLows.length - 1];
-    if (closes[i2] < closes[i1] && rsi14[i2] !== null && rsi14[i1] !== null && rsi14[i2] > rsi14[i1]) divBullish = 1.5;
-  }
-  if (priceHighs.length >= 2) {
-    const i1 = priceHighs[priceHighs.length - 2], i2 = priceHighs[priceHighs.length - 1];
-    if (closes[i2] > closes[i1] && rsi14[i2] !== null && rsi14[i1] !== null && rsi14[i2] < rsi14[i1]) divBearish = 1.5;
-  }
-
-  const funding = asset.funding;
-  const r = rsi14[last];
-  const warnings = [];
-
-  // LONG
-  let longScore = 0;
-  if (ppo > 0) {
-    if (ppo >= 0.5 && ppo <= 1.0) longScore += 1;
-    else if (ppo > 1.0) longScore += 2;
-  }
-  if (bullishCrossRecent) longScore += 1;
-  if (uptrendCtx && r >= 50 && r <= 70) longScore += 1;
-  else if (r > 70) warnings.push("RSI>70 überhitzt");
-  longScore += divBullish;
-  if (divBearish) longScore -= divBearish;
-  if (funding > FUNDING_CROWD_THRESHOLD) { longScore -= 1; warnings.push("Funding-Crowding gegen Long"); }
-  longScore *= volMult;
-
-  // SHORT
-  let shortScore = 0;
-  if (ppo < 0) {
-    if (Math.abs(ppo) >= 0.5 && Math.abs(ppo) <= 1.0) shortScore -= 1;
-    else if (Math.abs(ppo) > 1.0) shortScore -= 2;
-  }
-  if (bearishCrossRecent) shortScore -= 1;
-  if (downtrendCtx && r >= 30 && r <= 50) shortScore -= 1;
-  else if (r < 30) warnings.push("RSI<30 überverkauft, Bounce-Risiko");
-  shortScore -= divBearish;
-  if (divBullish) shortScore += divBullish;
-  if (funding < -FUNDING_CROWD_THRESHOLD) { shortScore += 1; warnings.push("Funding-Crowding gegen Short (bereits überfüllt)"); }
-  shortScore *= volMult;
-
-  return {
-    name: asset.name, dex: asset.dex || '', markPx: asset.markPx, ppo, rsi: r, funding,
-    longScore: Math.round(longScore * 100) / 100,
-    shortScore: Math.round(shortScore * 100) / 100,
-    volMult, warnings
-  };
-}
-
 // ---------- Lauf ----------
 async function runScreen() {
   const btn = document.getElementById('runBtn');
@@ -420,46 +223,24 @@ async function runScreen() {
   setProgress(0);
   const triggeredAt = Date.now();
   try {
-    setStatus('Lade Universe & Liquiditätsdaten…');
-    const assets = await getUniverseAndCtxs();
-    setStatus(`${assets.length} Assets liquide genug. Lade 7-Tage-Kerzen…`);
-
-    const results = [];
-    let done = 0;
-    for (let i = 0; i < assets.length; i += CONCURRENCY) {
-      const batch = assets.slice(i, i + CONCURRENCY);
-      const settled = await Promise.allSettled(batch.map(a => getHourlyCandles(a.name)));
-      settled.forEach((res, idx) => {
-        done++;
-        if (res.status === 'fulfilled') {
-          const r = scoreAsset(batch[idx], res.value);
-          if (r) results.push(r);
-        }
-      });
-      setProgress(Math.round(done / assets.length * 100));
-      setStatus(`Lade Kerzen… ${done}/${assets.length}`);
-      await new Promise(r => setTimeout(r, 120));
-    }
-
-    const ranked = results.map(r => {
-      const long = Math.abs(r.longScore) >= Math.abs(r.shortScore);
-      return { ...r, direction: long ? 'LONG' : 'SHORT', score: long ? r.longScore : r.shortScore };
-    }).sort((a, b) => Math.abs(b.score) - Math.abs(a.score));
+    const scan = await runScan(setStatus, setProgress);
+    const ranked = scan.ranked;
+    state.raw = { ts: triggeredAt, assets: scan.raw };
 
     // Lauf im Verlauf speichern (Zeitstempel = Zeitpunkt, an dem du getippt hast)
-    const run = { ts: triggeredAt, checked: assets.length, list: ranked.map(r => [r.name, r.score, r.direction === 'LONG' ? 1 : -1]) };
+    const run = { ts: triggeredAt, checked: scan.checked, list: ranked.map(r => [r.name, r.score, r.direction === 'LONG' ? 1 : -1]) };
     const hist = loadHistory();
     hist.push(run);
     if (hist.length > MAX_RUNS) hist.splice(0, hist.length - MAX_RUNS);
     persistHistory();
 
-    state.current = { ts: triggeredAt, checked: assets.length, rows: ranked };
+    state.current = { ts: triggeredAt, checked: scan.checked, rows: ranked };
     state.baseTs = null;
     state.highlight = null;
     saveLast(state.current);
 
     renderAll();
-    setStatus(`Fertig. ${assets.length} Assets geprüft, ${results.length} bewertet.` + (storageOk ? '' : ' Verlauf konnte nicht gespeichert werden.'));
+    setStatus(`Fertig. ${scan.checked} Assets geprüft, ${ranked.length} bewertet.` + (storageOk ? '' : ' Verlauf konnte nicht gespeichert werden.'));
   } catch (e) {
     setStatus('Fehler: ' + e.message);
     document.getElementById('results').innerHTML =
@@ -468,6 +249,53 @@ async function runScreen() {
     btn.disabled = false;
     setProgress(100);
   }
+}
+
+
+// ---------- Export ----------
+function stampName() {
+  const d = new Date(state.current ? state.current.ts : Date.now());
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;
+}
+function makeFile(name, text, type) { return new File(['\ufeff' + text], name, { type }); }
+function saveFile(file) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+function needRun() { alert('Noch keine Daten. Bitte zuerst "Aktualisieren" tippen.'); }
+function exportScoring() {
+  if (!state.current || !state.current.rows) return needRun();
+  saveFile(makeFile(`hl_scoring_${stampName()}.csv`, scoringCsv(state.current.ts, state.current.rows), 'text/csv'));
+}
+function exportHistory() {
+  const h = loadHistory();
+  if (!h.length) return needRun();
+  saveFile(makeFile(`hl_verlauf_${stampName()}.csv`, historyCsv(h), 'text/csv'));
+}
+function exportRaw() {
+  if (!state.raw) { alert('Rohdaten gibt es nur direkt nach einer Aktualisierung in dieser Sitzung (nach Neuladen der Seite sind sie weg).'); return; }
+  saveFile(makeFile(`hl_rohdaten_${stampName()}.json`, JSON.stringify(state.raw), 'application/json'));
+}
+// Alles in einer Datei; auf dem Handy über das Teilen-Menü, sonst als Download
+async function exportAll() {
+  if (!state.current || !state.current.rows) return needRun();
+  const bundle = {
+    exported_at: new Date().toISOString(),
+    run_ts: new Date(state.current.ts).toISOString(),
+    checked: state.current.checked,
+    scoring_csv: scoringCsv(state.current.ts, state.current.rows),
+    history_csv: historyCsv(loadHistory()),
+    raw: state.raw ? state.raw.assets : null
+  };
+  const file = makeFile(`hl_alles_${stampName()}.json`, JSON.stringify(bundle), 'application/json');
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  saveFile(file);
 }
 
 // ---------- UI-Steuerung ----------
