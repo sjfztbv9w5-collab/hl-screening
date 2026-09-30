@@ -134,7 +134,7 @@
 <main>
   <div id="view-rank">
     <div class="note">
-      Testlogik (v0.2, vereinfacht): PPO, MACD-Crossover, RSI(14)+Divergenz, Funding-Crowding
+      Testlogik (v0.3, vereinfacht): alle handelbaren Märkte inkl. HIP-3 (Aktien, Rohstoffe, Indizes, FX; Präfix z. B. xyz:). PPO, MACD-Crossover, RSI(14)+Divergenz, Funding-Crowding
       und Volumen-Multiplikator, jeweils Long- und Short-Score getrennt berechnet. Liquiditätsfilter
       (≥1 Mio USD 24h-Volumen &amp; Open Interest) aktiv, Konfluenz-/Regime-Hard-Gates und OI-Änderungs-Faktor
       deaktiviert. Sortiert nach Signalintensität; Pfeile zeigen die Platzänderung zur vorherigen Aktualisierung.
@@ -226,23 +226,46 @@ async function post(body) {
   return res.json();
 }
 
-async function getUniverseAndCtxs() {
-  const [meta, assetCtxs] = await post({ type: "metaAndAssetCtxs" });
+// Alle Perp-DEXs: Haupt-DEX (Krypto) + HIP-3-DEXs (Aktien, Rohstoffe, Indizes, FX …).
+// HIP-3-Assets heißen "dex:NAME" (z. B. "xyz:GOLD") und werden auch so für Kerzen abgefragt.
+async function getDexList() {
+  const dexes = [''];
+  try {
+    const list = await post({ type: "perpDexs" });
+    if (Array.isArray(list)) list.forEach(d => { if (d && d.name) dexes.push(d.name); });
+  } catch (e) {}
+  return dexes;
+}
+
+async function getDexAssets(dex) {
+  const dexArg = dex ? { dex } : {};
+  const [meta, assetCtxs] = await post({ type: "metaAndAssetCtxs", ...dexArg });
   let capped = [];
-  try { capped = await post({ type: "perpsAtOpenInterestCap" }); } catch (e) { capped = []; }
+  try { capped = await post({ type: "perpsAtOpenInterestCap", ...dexArg }); } catch (e) { capped = []; }
   const cappedSet = new Set(Array.isArray(capped) ? capped : []);
   const out = [];
   meta.universe.forEach((u, i) => {
     if (u.isDelisted) return;
     const ctx = assetCtxs[i];
+    if (!ctx) return;
     const markPx = parseFloat(ctx.markPx);
     const dayVol = parseFloat(ctx.dayNtlVlm);
     const oi = parseFloat(ctx.openInterest) * markPx;
     const funding = parseFloat(ctx.funding);
-    if (dayVol < MIN_VOL_USD || oi < MIN_OI_USD) return;
+    if (!(dayVol >= MIN_VOL_USD) || !(oi >= MIN_OI_USD)) return;
     if (cappedSet.has(u.name)) return;
-    out.push({ name: u.name, markPx, dayVol, oi, funding, maxLeverage: u.maxLeverage });
+    out.push({ name: u.name, dex, markPx, dayVol, oi, funding, maxLeverage: u.maxLeverage });
   });
+  return out;
+}
+
+async function getUniverseAndCtxs() {
+  const dexes = await getDexList();
+  const out = [];
+  for (const dex of dexes) {
+    try { out.push(...await getDexAssets(dex)); }
+    catch (e) { if (dex === '') throw e; }   // Fehler im Haupt-DEX abbrechen, bei HIP-3 überspringen
+  }
   return out;
 }
 
@@ -383,7 +406,7 @@ function scoreAsset(asset, candles) {
   shortScore *= volMult;
 
   return {
-    name: asset.name, markPx: asset.markPx, ppo, rsi: r, funding,
+    name: asset.name, dex: asset.dex || '', markPx: asset.markPx, ppo, rsi: r, funding,
     longScore: Math.round(longScore * 100) / 100,
     shortScore: Math.round(shortScore * 100) / 100,
     volMult, warnings
