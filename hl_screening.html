@@ -30,7 +30,7 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
   header {
-    padding: 16px 16px 12px;
+    padding: 16px 16px 10px;
     padding-top: max(16px, env(safe-area-inset-top));
     border-bottom: 1px solid var(--border);
     position: sticky; top: 0; background: var(--bg); z-index: 10;
@@ -40,68 +40,115 @@
   .controls { display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
   button {
     background: var(--accent); color: white; border: none; border-radius: 10px;
-    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
   }
   button:disabled { opacity: 0.5; }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; font-size: 13px; }
   .status { font-size: 12.5px; color: var(--muted); flex: 1; min-width: 120px; }
+  .progress { height: 4px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--accent); width: 0%; transition: width .2s; }
+
+  .tabs { display: flex; gap: 4px; margin-top: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
+  .tab { flex: 1; background: transparent; color: var(--muted); padding: 8px 10px; font-size: 13.5px; border-radius: 8px; }
+  .tab.active { background: var(--accent); color: #fff; }
+
   main { padding: 12px 12px 32px; max-width: 640px; margin: 0 auto; }
   .note {
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 10px 12px; font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5;
+    padding: 10px 12px; font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;
   }
-  .card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 12px 14px; margin-bottom: 10px;
+  .updated { font-size: 11.5px; color: var(--muted); margin: 2px 0 10px; text-align: center; line-height: 1.5; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 13px; line-height: 1.5; }
+
+  .filters { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; }
+  .chip {
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    padding: 6px 12px; font-size: 12.5px; border-radius: 999px; font-weight: 600; flex: none;
   }
-  .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .name { font-size: 16px; font-weight: 700; }
-  .rank { color: var(--muted); font-size: 12px; margin-right: 6px; }
-  .badge {
-    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
-    letter-spacing: 0.03em;
+  .chip.active { border-color: var(--accent); color: var(--text); background: rgba(59,130,246,0.15); }
+  input.search {
+    flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 999px; padding: 6px 12px; font-size: 16px; font-family: inherit;
   }
+
+  .row {
+    display: flex; gap: 10px; align-items: center;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 9px 12px; margin-bottom: 6px;
+  }
+  .rk { width: 30px; color: var(--muted); font-size: 13px; font-weight: 600; text-align: right; flex: none; }
+  .mid { flex: 1; min-width: 0; }
+  .nm { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .mt { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  .right { text-align: right; flex: none; }
+  .badge { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; letter-spacing: 0.03em; }
   .badge.LONG { background: rgba(34,197,94,0.15); color: var(--long); }
   .badge.SHORT { background: rgba(239,68,68,0.15); color: var(--short); }
-  .score { font-size: 18px; font-weight: 800; }
+  .flip { font-size: 10.5px; color: var(--warn); font-weight: 600; }
+  .score { font-size: 16px; font-weight: 800; }
   .score.LONG { color: var(--long); }
   .score.SHORT { color: var(--short); }
-  .metrics {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
-    margin-top: 10px; font-size: 11.5px; color: var(--muted);
+  .chg { font-size: 11.5px; font-weight: 700; margin-top: 2px; }
+  .up { color: var(--long); } .down { color: var(--short); } .same { color: var(--muted); } .new { color: var(--accent); }
+  .warn { margin-top: 4px; font-size: 11px; color: var(--warn); }
+
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
+  .section h2 { font-size: 14px; margin: 0 0 8px; font-weight: 700; }
+  .stamp { font-size: 13px; line-height: 1.7; }
+  .stamp .lbl { color: var(--muted); font-size: 12px; }
+  select {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 8px; font-size: 16px; max-width: 100%; font-family: inherit; margin-top: 2px;
   }
-  .metrics div b { display: block; color: var(--text); font-size: 13px; font-weight: 600; }
-  .warn { margin-top: 8px; font-size: 11.5px; color: var(--warn); }
-  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 13px; }
-  .progress {
-    height: 4px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden;
-  }
-  .progress > div { height: 100%; background: var(--accent); width: 0%; transition: width .2s; }
-  .updated { font-size: 11px; color: var(--muted); margin: 6px 0 14px; text-align: center; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .stat { background: var(--bg); border-radius: 10px; padding: 8px 4px; text-align: center; font-size: 11px; color: var(--muted); }
+  .stat b { display: block; font-size: 18px; color: var(--text); }
+  .mv { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border); font-size: 13px; }
+  .mv:first-of-type { border-top: none; }
+  .mv .l { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .mv .l b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mv .r { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .chartwrap svg { width: 100%; height: auto; display: block; }
+  .chartwrap text { font-family: inherit; }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .log { font-size: 12.5px; }
+  .log .mv .r { max-width: 55%; overflow: hidden; text-overflow: ellipsis; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Hyperliquid Signal-Screen</h1>
-  <div class="sub">Top 10 Long/Short nach Signalstärke · letzte 7 Tage · 1h-Basis</div>
+  <div class="sub">Gesamtliste Long/Short nach Signalstärke · letzte 7 Tage · 1h-Basis</div>
   <div class="controls">
     <button id="runBtn" onclick="runScreen()">Aktualisieren</button>
     <div class="status" id="status">Bereit.</div>
   </div>
   <div class="progress"><div id="progressBar"></div></div>
+  <div class="tabs">
+    <button class="tab active" id="tab-rank" onclick="setTab('rank')">Ranking</button>
+    <button class="tab" id="tab-hist" onclick="setTab('hist')">Verlauf</button>
+  </div>
 </header>
 
 <main>
-  <div class="note">
-    Testlogik (v0.1, vereinfacht): PPO, MACD-Crossover, RSI(14)+Divergenz, Funding-Crowding
-    und Volumen-Multiplikator wie im Konzept-Dokument, jeweils Long- und Short-Score getrennt
-    berechnet. Liquiditätsfilter (≥1 Mio USD 24h-Volumen &amp; Open Interest) aktiv, Konfluenz-/
-    Regime-Hard-Gates sowie der OI-Änderungs-Faktor sind in diesem Testlauf bewusst deaktiviert
-    bzw. nicht berechenbar (keine einfache OI-Zeitreihe über die API) — sortiert wird rein nach
-    Signalintensität.
+  <div id="view-rank">
+    <div class="note">
+      Testlogik (v0.2, vereinfacht): PPO, MACD-Crossover, RSI(14)+Divergenz, Funding-Crowding
+      und Volumen-Multiplikator, jeweils Long- und Short-Score getrennt berechnet. Liquiditätsfilter
+      (≥1 Mio USD 24h-Volumen &amp; Open Interest) aktiv, Konfluenz-/Regime-Hard-Gates und OI-Änderungs-Faktor
+      deaktiviert. Sortiert nach Signalintensität; Pfeile zeigen die Platzänderung zur vorherigen Aktualisierung.
+    </div>
+    <div id="updated" class="updated"></div>
+    <div class="filters">
+      <button class="chip active" data-f="ALL" onclick="setFilter('ALL')">Alle</button>
+      <button class="chip" data-f="LONG" onclick="setFilter('LONG')">Long</button>
+      <button class="chip" data-f="SHORT" onclick="setFilter('SHORT')">Short</button>
+      <input class="search" id="search" type="search" placeholder="Suchen" oninput="setQuery(this.value)">
+    </div>
+    <div id="results"><div class="empty">Noch keine Daten geladen. Tippe oben auf "Aktualisieren".</div></div>
   </div>
-  <div id="updated" class="updated"></div>
-  <div id="results"><div class="empty">Noch keine Daten geladen. Tippe oben auf "Aktualisieren".</div></div>
+  <div id="view-hist" style="display:none"></div>
 </main>
 
 <script>
@@ -113,9 +160,62 @@ const FUNDING_CROWD_THRESHOLD = 0.8 * FUNDING_CLAMP_8H;
 const HOURS_BACK = 24 * 7;
 const CONCURRENCY = 5;
 
+const HIST_KEY = "hlScreenHistory_v1";   // alle Läufe (kompakt: Name, Score, Richtung)
+const LAST_KEY = "hlScreenLast_v1";      // letzter Lauf mit allen Kennzahlen
+const MAX_RUNS = 60;
+const CHART_RUNS = 8;
+const PALETTE = ['#3b82f6','#22c55e','#ef4444','#f59e0b','#a855f7','#06b6d4','#ec4899','#84cc16',
+                 '#f97316','#14b8a6','#eab308','#8b5cf6','#f43f5e','#10b981','#60a5fa'];
+
+const state = { tab: 'rank', filter: 'ALL', query: '', current: null, chartMode: 'top', highlight: null, baseTs: null };
+let memHistory = null;
+let storageOk = true;
+
 function setStatus(txt) { document.getElementById('status').textContent = txt; }
 function setProgress(pct) { document.getElementById('progressBar').style.width = pct + '%'; }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
+// ---------- Speicher ----------
+function loadHistory() {
+  if (memHistory) return memHistory;
+  try {
+    const s = localStorage.getItem(HIST_KEY);
+    memHistory = s ? JSON.parse(s) : [];
+  } catch (e) { memHistory = []; storageOk = false; }
+  if (!Array.isArray(memHistory)) memHistory = [];
+  return memHistory;
+}
+function persistHistory() {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(memHistory)); storageOk = true; }
+  catch (e) { storageOk = false; }
+}
+function saveLast(cur) { try { localStorage.setItem(LAST_KEY, JSON.stringify(cur)); } catch (e) {} }
+function loadLast() { try { const s = localStorage.getItem(LAST_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+
+function rankMap(run) { const m = new Map(); run.list.forEach((e, i) => m.set(e[0], i + 1)); return m; }
+function dirMap(run) { const m = new Map(); run.list.forEach(e => m.set(e[0], e[2])); return m; }
+function prevRunFor(ts) {
+  const h = loadHistory();
+  for (let i = h.length - 1; i >= 0; i--) if (h[i].ts < ts) return h[i];
+  return null;
+}
+
+// ---------- Zeitformat ----------
+function fmtFull(ts) {
+  return new Date(ts).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' Uhr';
+}
+function fmtDur(ms) {
+  const m = ms / 60000;
+  if (m < 1) return 'unter 1 Min';
+  if (m < 60) return Math.round(m) + ' Min';
+  const h = m / 60;
+  if (h < 24) return (h < 10 ? h.toFixed(1).replace('.', ',') : Math.round(h)) + ' Std';
+  const d = h / 24;
+  return (d < 10 ? d.toFixed(1).replace('.', ',') : Math.round(d)) + ' Tg';
+}
+function fmtAgo(ts) { const ms = Date.now() - ts; return ms < 60000 ? 'gerade eben' : 'vor ' + fmtDur(ms); }
+
+// ---------- API ----------
 async function post(body) {
   const res = await fetch(API_URL, {
     method: "POST",
@@ -152,6 +252,7 @@ async function getHourlyCandles(coin) {
   return post({ type: "candleSnapshot", req: { coin, interval: "1h", startTime: start, endTime: end } });
 }
 
+// ---------- Indikatoren (unverändert) ----------
 function ema(values, period) {
   const out = new Array(values.length).fill(null);
   if (values.length < period) return out;
@@ -289,11 +390,12 @@ function scoreAsset(asset, candles) {
   };
 }
 
+// ---------- Lauf ----------
 async function runScreen() {
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
   setProgress(0);
-  document.getElementById('results').innerHTML = '';
+  const triggeredAt = Date.now();
   try {
     setStatus('Lade Universe & Liquiditätsdaten…');
     const assets = await getUniverseAndCtxs();
@@ -319,47 +421,296 @@ async function runScreen() {
     const ranked = results.map(r => {
       const long = Math.abs(r.longScore) >= Math.abs(r.shortScore);
       return { ...r, direction: long ? 'LONG' : 'SHORT', score: long ? r.longScore : r.shortScore };
-    }).sort((a, b) => Math.abs(b.score) - Math.abs(a.score)).slice(0, 10);
+    }).sort((a, b) => Math.abs(b.score) - Math.abs(a.score));
 
-    renderResults(ranked);
-    setStatus(`Fertig. ${assets.length} Assets geprüft, ${results.length} bewertet.`);
-    document.getElementById('updated').textContent =
-      'Letzte Aktualisierung: ' + new Date().toLocaleString('de-DE');
+    // Lauf im Verlauf speichern (Zeitstempel = Zeitpunkt, an dem du getippt hast)
+    const run = { ts: triggeredAt, checked: assets.length, list: ranked.map(r => [r.name, r.score, r.direction === 'LONG' ? 1 : -1]) };
+    const hist = loadHistory();
+    hist.push(run);
+    if (hist.length > MAX_RUNS) hist.splice(0, hist.length - MAX_RUNS);
+    persistHistory();
+
+    state.current = { ts: triggeredAt, checked: assets.length, rows: ranked };
+    state.baseTs = null;
+    state.highlight = null;
+    saveLast(state.current);
+
+    renderAll();
+    setStatus(`Fertig. ${assets.length} Assets geprüft, ${results.length} bewertet.` + (storageOk ? '' : ' Verlauf konnte nicht gespeichert werden.'));
   } catch (e) {
     setStatus('Fehler: ' + e.message);
     document.getElementById('results').innerHTML =
-      `<div class="empty">Konnte Daten nicht laden (${e.message}).<br>Prüfe deine Internetverbindung und versuche es erneut.</div>`;
+      `<div class="empty">Konnte Daten nicht laden (${esc(e.message)}).<br>Prüfe deine Internetverbindung und versuche es erneut.</div>`;
   } finally {
     btn.disabled = false;
     setProgress(100);
   }
 }
 
-function renderResults(ranked) {
+// ---------- UI-Steuerung ----------
+function setTab(t) {
+  state.tab = t;
+  document.getElementById('tab-rank').classList.toggle('active', t === 'rank');
+  document.getElementById('tab-hist').classList.toggle('active', t === 'hist');
+  document.getElementById('view-rank').style.display = t === 'rank' ? '' : 'none';
+  document.getElementById('view-hist').style.display = t === 'hist' ? '' : 'none';
+  if (t === 'hist') renderHistory();
+  window.scrollTo(0, 0);
+}
+function setFilter(f) {
+  state.filter = f;
+  document.querySelectorAll('.filters .chip').forEach(c => c.classList.toggle('active', c.dataset.f === f));
+  renderRanking();
+}
+function setQuery(q) { state.query = q.trim().toUpperCase(); renderRanking(); }
+function setBase(ts) { state.baseTs = Number(ts); state.highlight = null; renderHistory(); }
+function setChartMode(m) { state.chartMode = m; state.highlight = null; renderHistory(); }
+function toggleHighlight(name) { state.highlight = state.highlight === name ? null : name; renderHistory(); }
+function clearHistory() {
+  if (!confirm('Gesamten Verlauf löschen? Das aktuelle Ranking bleibt sichtbar.')) return;
+  memHistory = [];
+  try { localStorage.removeItem(HIST_KEY); } catch (e) {}
+  if (state.current) {
+    memHistory.push({ ts: state.current.ts, checked: state.current.checked,
+      list: state.current.rows.map(r => [r.name, r.score, r.direction === 'LONG' ? 1 : -1]) });
+    persistHistory();
+  }
+  state.baseTs = null;
+  renderAll();
+}
+function renderAll() { renderRanking(); if (state.tab === 'hist') renderHistory(); }
+
+function chgHtml(name, rank, pm) {
+  if (!pm) return '';
+  if (!pm.has(name)) return '<div class="chg new">NEU</div>';
+  const d = pm.get(name) - rank;
+  if (d > 0) return `<div class="chg up">▲ ${d}</div>`;
+  if (d < 0) return `<div class="chg down">▼ ${-d}</div>`;
+  return '<div class="chg same">–</div>';
+}
+
+// ---------- Reiter 1: Ranking ----------
+function renderRanking() {
   const el = document.getElementById('results');
-  if (!ranked.length) {
-    el.innerHTML = '<div class="empty">Keine Signale gefunden.</div>';
+  const upd = document.getElementById('updated');
+  const cur = state.current;
+  if (!cur || !cur.rows) {
+    upd.textContent = '';
+    el.innerHTML = '<div class="empty">Noch keine Daten geladen. Tippe oben auf "Aktualisieren".</div>';
     return;
   }
-  el.innerHTML = ranked.map((r, i) => `
-    <div class="card">
-      <div class="row1">
-        <div><span class="rank">${i + 1}.</span><span class="name">${r.name}</span></div>
-        <span class="badge ${r.direction}">${r.direction}</span>
+  const prev = prevRunFor(cur.ts);
+  const pm = prev ? rankMap(prev) : null;
+  const pdm = prev ? dirMap(prev) : null;
+  const nLong = cur.rows.filter(r => r.direction === 'LONG').length;
+  upd.innerHTML = `Letzte Aktualisierung: <b>${fmtFull(cur.ts)}</b> (${fmtAgo(cur.ts)})<br>` +
+    `${cur.rows.length} bewertet · ${nLong} Long / ${cur.rows.length - nLong} Short` +
+    (prev ? ` · Änderungen ggü. ${fmtFull(prev.ts)}` : ' · noch kein Vergleichslauf');
+
+  const rows = cur.rows.map((r, i) => ({ ...r, rank: i + 1 }))
+    .filter(r => state.filter === 'ALL' || r.direction === state.filter)
+    .filter(r => !state.query || r.name.toUpperCase().includes(state.query));
+
+  if (!rows.length) { el.innerHTML = '<div class="empty">Keine Treffer für diesen Filter.</div>'; return; }
+
+  el.innerHTML = rows.map(r => {
+    const dirNum = r.direction === 'LONG' ? 1 : -1;
+    const flipped = pdm && pdm.has(r.name) && pdm.get(r.name) !== dirNum;
+    return `
+    <div class="row">
+      <div class="rk">${r.rank}</div>
+      <div class="mid">
+        <div class="nm">${esc(r.name)} <span class="badge ${r.direction}">${r.direction}</span>
+          ${flipped ? `<span class="flip">⇄ vorher ${dirNum === 1 ? 'SHORT' : 'LONG'}</span>` : ''}</div>
+        <div class="mt">$${formatPrice(r.markPx)} · PPO ${r.ppo >= 0 ? '+' : ''}${r.ppo.toFixed(2)}% · RSI ${r.rsi.toFixed(1)} · F ${(r.funding * 100).toFixed(4)}% · Vol ×${r.volMult}</div>
+        ${r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join(' · ')}</div>` : ''}
       </div>
-      <div class="row1" style="margin-top:4px;">
+      <div class="right">
         <div class="score ${r.direction}">${r.score > 0 ? '+' : ''}${r.score.toFixed(2)}</div>
-        <div style="color:var(--muted); font-size:12.5px;">$${formatPrice(r.markPx)}</div>
+        ${chgHtml(r.name, r.rank, pm)}
       </div>
-      <div class="metrics">
-        <div>PPO<b>${r.ppo >= 0 ? '+' : ''}${r.ppo.toFixed(2)}%</b></div>
-        <div>RSI<b>${r.rsi.toFixed(1)}</b></div>
-        <div>Funding<b>${(r.funding * 100).toFixed(4)}%</b></div>
-        <div>Vol<b>×${r.volMult}</b></div>
-      </div>
-      ${r.warnings.length ? `<div class="warn">${r.warnings.join(' · ')}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ---------- Reiter 2: Verlauf ----------
+function badge(dir) { const d = dir === 1 ? 'LONG' : 'SHORT'; return `<span class="badge ${d}">${d}</span>`; }
+
+function moverList(items, fmtRight, limit = 15) {
+  if (!items.length) return '<div class="hint">Keine.</div>';
+  return items.slice(0, limit).map(m => `
+    <div class="mv"><div class="l"><b>${esc(m.name)}</b>${badge(m.dir)}</div><div class="r">${fmtRight(m)}</div></div>`).join('')
+    + (items.length > limit ? `<div class="hint">+ ${items.length - limit} weitere</div>` : '');
+}
+
+function renderHistory() {
+  const el = document.getElementById('view-hist');
+  const hist = loadHistory();
+  const storageNote = storageOk ? '' :
+    '<div class="note">Der Browser erlaubt hier kein dauerhaftes Speichern – der Verlauf gilt nur bis zum Schließen der Seite.</div>';
+
+  if (!hist.length) {
+    el.innerHTML = storageNote + '<div class="empty">Noch kein Verlauf.<br>Jede Aktualisierung wird mit Zeitstempel gespeichert.</div>';
+    return;
+  }
+  const latest = hist[hist.length - 1];
+  const logHtml = renderLog(hist);
+
+  if (hist.length === 1) {
+    el.innerHTML = storageNote + `
+      <div class="section stamp"><div class="lbl">Letzte Aktualisierung</div><b>${fmtFull(latest.ts)}</b> (${fmtAgo(latest.ts)})</div>
+      <div class="empty">Ab der zweiten Aktualisierung siehst du hier, welche Assets im Ranking auf- und abgestiegen sind.</div>
+      ${logHtml}`;
+    return;
+  }
+
+  let base = hist.find(h => h.ts === state.baseTs && h.ts < latest.ts);
+  if (!base) base = hist[hist.length - 2];
+
+  const bm = rankMap(base), bdm = dirMap(base), lm = rankMap(latest);
+  const movers = [], newOnes = [];
+  latest.list.forEach((e, i) => {
+    const name = e[0], r = i + 1;
+    if (bm.has(name)) movers.push({ name, r, prev: bm.get(name), d: bm.get(name) - r, dir: e[2], prevDir: bdm.get(name) });
+    else newOnes.push({ name, r, dir: e[2] });
+  });
+  const gone = base.list.map((e, i) => ({ name: e[0], prev: i + 1, dir: e[2] })).filter(g => !lm.has(g.name));
+  const risers = movers.filter(m => m.d > 0).sort((a, b) => b.d - a.d || a.r - b.r);
+  const fallers = movers.filter(m => m.d < 0).sort((a, b) => a.d - b.d || a.r - b.r);
+  const same = movers.filter(m => m.d === 0).length;
+  const flips = movers.filter(m => m.dir !== m.prevDir).sort((a, b) => a.r - b.r);
+
+  const options = hist.slice(0, -1).map(h => h).reverse().map(h =>
+    `<option value="${h.ts}" ${h.ts === base.ts ? 'selected' : ''}>${fmtFull(h.ts)} · ${h.list.length} Assets</option>`).join('');
+
+  // Chart
+  const chartRuns = hist.slice(Math.max(0, hist.length - CHART_RUNS));
+  let names;
+  if (state.chartMode === 'up') names = risers.slice(0, 10).map(m => m.name);
+  else if (state.chartMode === 'down') names = fallers.slice(0, 10).map(m => m.name);
+  else names = latest.list.slice(0, 12).map(e => e[0]);
+
+  const modeChip = (m, label) => `<button class="chip ${state.chartMode === m ? 'active' : ''}" onclick="setChartMode('${m}')">${label}</button>`;
+
+  el.innerHTML = storageNote + `
+    <div class="section stamp">
+      <div class="lbl">Letzte Aktualisierung</div>
+      <b>${fmtFull(latest.ts)}</b> (${fmtAgo(latest.ts)})
+      <div class="lbl" style="margin-top:6px">Verglichen mit</div>
+      <select onchange="setBase(this.value)">${options}</select>
+      <div class="lbl" style="margin-top:4px">Abstand: ${fmtDur(latest.ts - base.ts)}</div>
     </div>
-  `).join('');
+
+    <div class="section">
+      <div class="stats">
+        <div class="stat"><b class="up">${risers.length}</b>Aufsteiger</div>
+        <div class="stat"><b class="down">${fallers.length}</b>Absteiger</div>
+        <div class="stat"><b>${same}</b>Unverändert</div>
+        <div class="stat"><b class="new">${newOnes.length}</b>Neu</div>
+        <div class="stat"><b>${gone.length}</b>Rausgefallen</div>
+        <div class="stat"><b style="color:var(--warn)">${flips.length}</b>Richtungswechsel</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Rangverlauf · letzte ${chartRuns.length} Aktualisierungen</h2>
+      <div class="filters">${modeChip('top', 'Top 12')}${modeChip('up', 'Aufsteiger')}${modeChip('down', 'Absteiger')}</div>
+      <div class="chartwrap" id="chart">${buildChart(chartRuns, names)}</div>
+      <div class="hint">Platz 1 oben. Tippe auf eine Linie oder einen Namen zum Hervorheben.</div>
+    </div>
+
+    <div class="section"><h2>Größte Aufsteiger</h2>
+      ${moverList(risers, m => `#${m.prev} → #${m.r} <span class="up">▲ ${m.d}</span>`)}</div>
+    <div class="section"><h2>Größte Absteiger</h2>
+      ${moverList(fallers, m => `#${m.prev} → #${m.r} <span class="down">▼ ${-m.d}</span>`)}</div>
+    ${flips.length ? `<div class="section"><h2>Richtungswechsel</h2>
+      ${moverList(flips, m => `#${m.prev} ${m.prevDir === 1 ? 'LONG' : 'SHORT'} → #${m.r}`)}</div>` : ''}
+    ${newOnes.length ? `<div class="section"><h2>Neu im Ranking</h2>
+      ${moverList(newOnes, m => `#${m.r}`)}</div>` : ''}
+    ${gone.length ? `<div class="section"><h2>Rausgefallen</h2>
+      ${moverList(gone, m => `vorher #${m.prev}`)}</div>` : ''}
+    ${logHtml}`;
+
+  const chartEl = document.getElementById('chart');
+  if (chartEl) chartEl.onclick = ev => {
+    const g = ev.target.closest('[data-n]');
+    if (g) toggleHighlight(g.getAttribute('data-n'));
+  };
+}
+
+function renderLog(hist) {
+  return `<div class="section log"><h2>Protokoll (${hist.length} Aktualisierungen)</h2>
+    ${hist.slice().reverse().map(h => `
+      <div class="mv"><div class="l"><b>${fmtFull(h.ts)}</b></div>
+      <div class="r">${h.list.slice(0, 3).map(e => esc(e[0])).join(', ')}${h.list.length > 3 ? ' …' : ''}</div></div>`).join('')}
+    <div style="margin-top:10px"><button class="ghost" onclick="clearHistory()">Verlauf löschen</button></div>
+  </div>`;
+}
+
+function buildChart(runs, names) {
+  if (runs.length < 2) return '<div class="hint">Mindestens zwei Aktualisierungen nötig.</div>';
+  if (!names.length) return '<div class="hint">Keine Assets für diese Auswahl.</div>';
+  const W = 360, H = 290, padL = 30, padR = 92, padT = 12, padB = 36;
+  const maps = runs.map(rankMap);
+  let maxR = 2;
+  names.forEach(n => maps.forEach(m => { const r = m.get(n); if (r) maxR = Math.max(maxR, r); }));
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const x = i => padL + i * iw / (runs.length - 1);
+  const y = r => padT + (r - 1) * ih / (maxR - 1);
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Raster + Y-Achse (Rang)
+  const ticks = [...new Set([0, 1, 2, 3].map(k => Math.round(1 + k * (maxR - 1) / 3)))];
+  ticks.forEach(t => {
+    svg += `<line x1="${padL}" x2="${W - padR}" y1="${y(t)}" y2="${y(t)}" stroke="#232d38" stroke-width="1"/>`;
+    svg += `<text x="${padL - 6}" y="${y(t) + 3.5}" fill="#8b9aab" font-size="10" text-anchor="end">#${t}</text>`;
+  });
+  // X-Achse (Zeitpunkte)
+  runs.forEach((run, i) => {
+    const d = new Date(run.ts);
+    const hm = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const dm = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+    svg += `<line x1="${x(i)}" x2="${x(i)}" y1="${padT}" y2="${H - padB}" stroke="#1a222c" stroke-width="1"/>`;
+    svg += `<text x="${x(i)}" y="${H - padB + 14}" fill="#8b9aab" font-size="9.5" text-anchor="middle">${hm}</text>`;
+    svg += `<text x="${x(i)}" y="${H - padB + 26}" fill="#5f6d7d" font-size="8.5" text-anchor="middle">${dm}</text>`;
+  });
+
+  // Linien
+  const labels = [];
+  names.forEach((n, idx) => {
+    const color = PALETTE[idx % PALETTE.length];
+    const dim = state.highlight && state.highlight !== n;
+    const op = dim ? 0.15 : 1;
+    const sw = state.highlight === n ? 3 : 2;
+    let d = '', pen = false, dots = '';
+    maps.forEach((m, i) => {
+      const r = m.get(n);
+      if (!r) { pen = false; return; }
+      d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(r).toFixed(1) + ' ';
+      pen = true;
+      dots += `<circle cx="${x(i).toFixed(1)}" cy="${y(r).toFixed(1)}" r="${state.highlight === n ? 3.5 : 2.6}" fill="${color}"/>`;
+    });
+    const lastR = maps[maps.length - 1].get(n);
+    svg += `<g data-n="${esc(n)}" opacity="${op}" style="cursor:pointer">
+      <path d="${d}" fill="none" stroke="transparent" stroke-width="12"/>
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"/>${dots}</g>`;
+    if (lastR) labels.push({ n, color, op, y: y(lastR), r: lastR });
+  });
+
+  // Beschriftungen rechts, gegen Überlappung verschoben
+  labels.sort((a, b) => a.y - b.y);
+  const gap = 11.5;
+  for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < gap) labels[i].y = labels[i - 1].y + gap;
+  const overflow = labels.length ? labels[labels.length - 1].y - (H - padB + 4) : 0;
+  if (overflow > 0) labels.forEach(l => { l.y -= overflow; });
+  labels.forEach(l => {
+    const short = l.n.length > 11 ? l.n.slice(0, 10) + '…' : l.n;
+    svg += `<text data-n="${esc(l.n)}" x="${W - padR + 8}" y="${(l.y + 3.5).toFixed(1)}" fill="${l.color}" opacity="${l.op}"
+      font-size="10.5" font-weight="${state.highlight === l.n ? 700 : 600}" style="cursor:pointer">${esc(short)} <tspan fill="#8b9aab" font-weight="400">#${l.r}</tspan></text>`;
+  });
+
+  return svg + '</svg>';
 }
 
 function formatPrice(p) {
@@ -367,6 +718,12 @@ function formatPrice(p) {
   if (p >= 1) return p.toFixed(4);
   return p.toPrecision(4);
 }
+
+// Beim Öffnen den letzten Stand anzeigen, ohne neu zu laden
+(function init() {
+  const last = loadLast();
+  if (last && last.rows) { state.current = last; renderRanking(); }
+})();
 </script>
 
 </body>
