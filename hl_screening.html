@@ -167,6 +167,29 @@ const MAX_RUNS = 60;                       // so viele Läufe zeigen Protokoll u
 const CHART_DAYS = 7;                      // Zeitraum der Rangverlauf-Grafik
 const CHART_MS = CHART_DAYS * 24 * 3600 * 1000;
 const MAX_STORED = 500;                    // Obergrenze im Speicher (deckt 7 Tage auch bei häufigem Aktualisieren)
+// Stündliche Läufe des Server-Jobs (Branch "data"), nur für die Grafik
+const SERVER_CHART_URL = "https://raw.githubusercontent.com/sjfztbv9w5-collab/hl-screening/data/chart_7d.json";
+const server = { runs: null, loading: false, failed: false };
+
+async function loadServerRuns() {
+  if (server.loading || server.runs) return;
+  server.loading = true;
+  try {
+    const res = await fetch(SERVER_CHART_URL + '?t=' + Math.floor(Date.now() / 300000), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    const runs = (j && Array.isArray(j.runs) ? j.runs : [])
+      .filter(r => r && typeof r.ts === 'number' && Array.isArray(r.list))
+      .map(r => ({ ts: r.ts, list: r.list, server: true }));
+    server.runs = runs;
+    server.failed = false;
+  } catch (e) {
+    server.failed = true;
+  } finally {
+    server.loading = false;
+  }
+  if (state.tab === 'hist') renderHistory();
+}
 const PALETTE = ['#3b82f6','#22c55e','#ef4444','#f59e0b','#a855f7','#06b6d4','#ec4899','#84cc16',
                  '#f97316','#14b8a6','#eab308','#8b5cf6','#f43f5e','#10b981','#60a5fa'];
 
@@ -441,11 +464,21 @@ function renderHistory() {
   const options = hist.slice(Math.max(0, hist.length - MAX_RUNS), -1).reverse().map(h =>
     `<option value="${h.ts}" ${h.ts === base.ts ? 'selected' : ''}>${fmtFull(h.ts)} · ${h.list.length} Assets</option>`).join('');
 
-  // Chart: alle Aktualisierungen der letzten 7 Tage
-  const chartRuns = hist.filter(h => h.ts >= latest.ts - CHART_MS);
+  // Chart: eigene Aktualisierungen + stündliche Server-Läufe der letzten 7 Tage
+  if (!server.runs && !server.failed) loadServerRuns();
+  const seen = new Set();
+  const merged = hist.concat(server.runs || [])
+    .sort((a, b) => a.ts - b.ts)
+    .filter(r => (seen.has(r.ts) ? false : seen.add(r.ts)));
+  const chartEnd = merged[merged.length - 1].ts;
+  const chartRuns = merged.filter(h => h.ts >= chartEnd - CHART_MS);
   const chartFrom = chartRuns[0].ts;
-  const chartSpanNote = latest.ts - chartFrom < CHART_MS - 12 * 3600 * 1000
-    ? ` Gespeicherter Verlauf reicht bis ${fmtFull(chartFrom)} zurück.` : '';
+  const nServer = chartRuns.filter(r => r.server).length;
+  const chartSpanNote = chartEnd - chartFrom < CHART_MS - 12 * 3600 * 1000
+    ? ` Daten reichen bis ${fmtFull(chartFrom)} zurück.` : '';
+  const chartSrcNote = server.loading ? ' Lade stündliche Server-Läufe…'
+    : server.failed ? ' Server-Läufe nicht erreichbar, nur eigene Aktualisierungen.'
+    : ` ${chartRuns.length - nServer} eigene + ${nServer} stündliche Server-Läufe.`;
   let names;
   if (state.chartMode === 'up') names = risers.slice(0, 10).map(m => m.name);
   else if (state.chartMode === 'down') names = fallers.slice(0, 10).map(m => m.name);
@@ -474,10 +507,10 @@ function renderHistory() {
     </div>
 
     <div class="section">
-      <h2>Rangverlauf · letzte ${CHART_DAYS} Tage · ${chartRuns.length} Aktualisierungen</h2>
+      <h2>Rangverlauf · letzte ${CHART_DAYS} Tage · ${chartRuns.length} Läufe</h2>
       <div class="filters">${modeChip('top', 'Top 12')}${modeChip('up', 'Aufsteiger')}${modeChip('down', 'Absteiger')}</div>
       <div class="chartwrap" id="chart">${buildChart(chartRuns, names)}</div>
-      <div class="hint">Platz 1 oben. Tippe auf eine Linie oder einen Namen zum Hervorheben.${chartSpanNote}</div>
+      <div class="hint">Platz 1 oben. Tippe auf eine Linie oder einen Namen zum Hervorheben.${chartSrcNote}${chartSpanNote}</div>
     </div>
 
     <div class="section"><h2>Größte Aufsteiger</h2>
