@@ -1,130 +1,128 @@
 run_ts,rank,name,dex,direction,score,long_score,short_score,price,ppo_pct,rsi,funding,vol_mult,warnings
-2026-11-14T16:59:15.181Z,1,BTC,,SHORT,-3.6,0,-3.6,65362,-1.2705,20.57,0.0000105245,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,2,ETH,,SHORT,-3.6,0,-3.6,1825.7,-1.3286,22.50,-0.0000139683,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,3,SOL,,SHORT,-3.6,0,-3.6,72.425,-1.9017,21.57,-0.0000148292,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,4,ARB,,SHORT,-3.6,0,-3.6,0.13393,-1.5874,28.42,-0.0000387265,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,5,kPEPE,,SHORT,-3.6,0,-3.6,0.003895,-2.3157,15.43,-0.0000186427,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,6,XRP,,SHORT,-3.6,0,-3.6,0.95701,-1.1877,24.93,-0.0000171585,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,7,BCH,,SHORT,-3.6,0,-3.6,207.81,-1.2678,25.50,-0.000014088,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,8,JUP,,SHORT,-3.6,0,-3.6,0.25076,-0.5257,35.99,-0.0000108972,1.2,
-2026-11-14T16:59:15.181Z,9,GRAM,,SHORT,-3.6,0,-3.6,1.0536,-1.3725,30.31,-0.0001641071,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,10,TIA,,SHORT,-3,0,-3,0.3508,-3.0626,18.36,-0.0000423902,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,11,MON,,SHORT,-3,0,-3,0.015658,-1.3584,31.19,0.0000125,1,
-2026-11-14T16:59:15.181Z,12,io:NVDA,io,SHORT,-3,0,-3,159.5,-0.5204,34.28,-0.0000106135,1,
-2026-11-14T16:59:15.181Z,13,AERO,,LONG,2.5,2.5,-2.5,0.43836,-2.2875,30.06,0.0000125,1,
-2026-11-14T16:59:15.181Z,14,AVAX,,SHORT,-2.4,0,-2.4,7.4899,-2.0158,20.42,-0.0000251934,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,15,OP,,SHORT,-2.4,0,-2.4,0.08326,-2.3743,17.97,-0.0000161411,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,16,LTC,,SHORT,-2.4,0,-2.4,45.552,-1.5533,22.60,-0.0000231688,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,17,INJ,,SHORT,-2.4,0,-2.4,7.17691,-1.0904,26.40,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,18,CRV,,SHORT,-2.4,0,-2.4,0.21112,-1.8304,20.39,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,19,LINK,,SHORT,-2.4,0,-2.4,9.076,-1.6724,21.58,-0.0000208234,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,20,APT,,SHORT,-2.4,0,-2.4,0.4733,-2.6561,16.53,-0.0000425874,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,21,AAVE,,SHORT,-2.4,0,-2.4,102.86,-1.9431,23.08,0.0000010047,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,22,kSHIB,,SHORT,-2.4,0,-2.4,0.003962,-1.4941,21.85,-0.0000066143,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,23,ZRO,,SHORT,-2.4,0,-2.4,1.50517,-0.8835,41.10,0.0000125,1.2,
-2026-11-14T16:59:15.181Z,24,FET,,SHORT,-2.4,0,-2.4,0.13024,-2.2950,17.21,-0.0000270719,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,25,NEAR,,SHORT,-2.4,0,-2.4,3.1118,-1.9929,21.49,-0.0000047261,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,26,STRK,,SHORT,-2.4,0,-2.4,0.03345,-1.8206,22.55,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,27,TAO,,SHORT,-2.4,0,-2.4,192.726,-1.8125,22.46,-0.0000085002,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,28,ETHFI,,SHORT,-2.4,0,-2.4,0.5059,-3.2269,16.55,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,29,ENA,,SHORT,-2.4,0,-2.4,0.119066,-2.8052,19.16,-0.0000201441,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,30,GRASS,,SHORT,-2.4,0,-2.4,0.3831,-2.1914,23.62,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,31,HYPE,,SHORT,-2.4,0,-2.4,65.9614,-1.8082,28.43,0.000009033,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,32,VIRTUAL,,SHORT,-2.4,0,-2.4,0.4541,-2.4267,17.59,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,33,PENGU,,SHORT,-2.4,0,-2.4,0.00514,-3.2843,13.20,-0.0000406957,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,34,FARTCOIN,,SHORT,-2.4,0,-2.4,0.09588,-2.2720,19.09,0.0000018715,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,35,MORPHO,,SHORT,-2.4,0,-2.4,1.83125,-1.5191,25.09,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,36,VVV,,SHORT,-2.4,0,-2.4,17.441,-1.7341,31.80,-0.0000802648,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,37,XPL,,SHORT,-2.4,0,-2.4,0.045448,-1.5224,24.59,-0.00000104,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,38,ASTER,,SHORT,-2.4,0,-2.4,0.62101,-0.9572,34.09,0.0000125,0.8,
-2026-11-14T16:59:15.181Z,39,ICP,,SHORT,-2.4,0,-2.4,2.2815,-2.2531,23.51,-0.0000266957,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,40,LIT,,SHORT,-2.4,0,-2.4,2.863,-2.0863,26.67,-0.0000086848,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,41,CASHCAT,,SHORT,-2.4,0,-2.4,0.040684,-3.6203,15.32,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,42,PONS,,SHORT,-2.4,0,-2.4,0.12098,-4.5413,25.37,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,43,USELESS,,SHORT,-2.4,0,-2.4,0.103667,-4.5872,22.93,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,44,xyz:NVDA,xyz,SHORT,-2.4,0,-2.4,159.56,-0.5174,34.48,-0.0001367273,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,45,xyz:COIN,xyz,SHORT,-2.4,0,-2.4,120.06,-1.3546,18.43,-0.0002104892,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,46,xyz:MSTR,xyz,SHORT,-2.4,0,-2.4,102.45,-1.7723,21.35,-0.0003666779,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,47,xyz:CRCL,xyz,SHORT,-2.4,0,-2.4,58.608,-1.3533,20.05,-0.0002560464,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,48,xyz:CRWV,xyz,SHORT,-2.4,0,-2.4,50.966,-1.1849,31.04,-0.0002226741,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,49,xyz:KIOXIA,xyz,SHORT,-2.4,0,-2.4,52.827,-1.1079,22.76,-0.0008791075,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,50,xyz:KORU,xyz,SHORT,-2.4,0,-2.4,7.011,-1.7637,24.03,-0.0008140382,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,51,WLFI,,SHORT,-2,0,-2,0.046584,-0.0504,38.82,-0.0000037928,1,
-2026-11-14T16:59:15.181Z,52,CC,,SHORT,-2,0,-2,0.080775,-1.4777,22.52,0.0000125,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,53,xyz:LITE,xyz,SHORT,-2,0,-2,574.71,-1.0871,30.50,-0.0001618914,1,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,54,xyz:PURRDAT,xyz,SHORT,-2,0,-2,8.1244,-1.4478,31.25,-0.0004918869,1,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,55,xyz:DELL,xyz,SHORT,-2,0,-2,335.61,-1.2197,30.76,-0.000153006,1,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,56,io:SNDK,io,SHORT,-2,0,-2,845.27,-1.2353,27.30,-0.0000328898,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,57,BNB,,LONG,1.8,1.8,-0.6,586.67,-1.6712,17.89,0.0000090783,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,58,DOGE,,LONG,1.8,1.8,-0.6,0.059982,-1.5583,22.48,-0.0000252809,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,59,SUI,,LONG,1.8,1.8,-0.6,0.72503,-1.8999,21.52,-0.0000380068,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,60,UNI,,LONG,1.8,1.8,-0.6,4.9432,-3.2351,15.64,-0.0000405279,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,61,DOT,,LONG,1.8,1.8,-0.6,0.74855,-1.9301,20.50,-0.0000018538,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,62,ADA,,LONG,1.8,1.8,-0.6,0.15468,-1.9772,19.42,-0.0000191184,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,63,ONDO,,LONG,1.8,1.8,-0.6,0.30729,-2.1798,20.24,-0.00004869,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,64,XLM,,LONG,1.8,1.8,-0.6,0.13712,-1.2377,26.36,-0.0000106165,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,65,ZEC,,LONG,1.8,1.8,-0.6,860.04,-1.9282,26.28,0.0000026468,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,66,xyz:SILVER,xyz,LONG,1.8,1.8,0.6,48.147,-0.5948,21.49,-0.0000974379,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,67,xyz:COPPER,xyz,LONG,1.8,1.8,0.6,6.1376,-0.3049,36.16,0.00000625,1.2,
-2026-11-14T16:59:15.181Z,68,xyz:HIMS,xyz,LONG,1.8,1.8,-0.6,19.059,-0.7032,31.66,-0.000202133,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,69,xyz:SOXL,xyz,LONG,1.8,1.8,-0.6,54.642,-2.1128,31.79,-0.000411986,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,70,xyz:IREN,xyz,LONG,1.8,1.8,0.6,17.103,-1.8254,24.30,-0.0002531014,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,71,HBAR,,LONG,1.5,1.5,-1.5,0.05785,-1.5285,25.52,0.0000125,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,72,SPX,,LONG,1.5,1.5,-0.5,0.29965,-2.5588,21.81,0.0000017611,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,73,XMR,,LONG,1.5,1.5,-1.5,510.34,-0.7174,32.73,0.0000125,1,
-2026-11-14T16:59:15.181Z,74,xyz:TSM,xyz,LONG,1.5,1.5,1.5,391.23,-0.5440,28.72,-0.000095542,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,75,xyz:UNITREE,xyz,LONG,1.5,1.5,-0.5,99.699,-0.6027,22.56,-0.0000441916,1,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,76,WLD,,SHORT,-1.2,0,-1.2,0.26245,-2.4910,19.50,-0.0000634591,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,77,FIL,,SHORT,-1.2,0,-1.2,0.6544,-2.1240,20.48,-0.0000512798,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,78,IMX,,SHORT,-1.2,0,-1.2,0.0982,-2.4836,25.92,-0.0001272719,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,79,kBONK,,SHORT,-1.2,0,-1.2,0.002392,-2.1475,20.34,-0.0001321361,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,80,TRUMP,,SHORT,-1.2,0,-1.2,0.97749,-2.2168,16.86,-0.0000878798,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,81,PAXG,,SHORT,-1.2,0,-1.2,3831.24,-0.2541,22.60,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,82,PUMP,,SHORT,-1.2,0,-1.2,0.003012,-2.4882,17.55,-0.0000736643,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,83,xyz:XYZ100,xyz,SHORT,1.2,0,1.2,27565,-0.3312,26.63,-0.0000627839,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,84,xyz:HOOD,xyz,SHORT,-1.2,0,-1.2,74.732,-1.2183,22.81,-0.00019096,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,85,xyz:INTC,xyz,SHORT,-1.2,0,-1.2,57.212,-0.8299,25.96,-0.0003012221,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,86,xyz:AAPL,xyz,SHORT,-1.2,0,-1.2,355.58,-0.0181,45.42,-0.0000212988,1.2,
-2026-11-14T16:59:15.181Z,87,xyz:MSFT,xyz,SHORT,-1.2,0,-1.2,519.2,-0.0505,40.82,-0.0000307662,1.2,
-2026-11-14T16:59:15.181Z,88,xyz:AMD,xyz,SHORT,-1.2,0,-1.2,518.49,-1.2783,28.64,-0.0001697676,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,89,xyz:MU,xyz,SHORT,-1.2,0,-1.2,754.54,-0.6129,33.14,-0.000178753,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,90,xyz:SNDK,xyz,SHORT,-1.2,0,-1.2,846.5,-1.2335,27.59,-0.0003109095,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,91,xyz:RIVN,xyz,SHORT,-1.2,0,-1.2,11.982,-1.1443,27.69,-0.000144738,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,92,xyz:BABA,xyz,SHORT,-1.2,0,-1.2,93.289,-0.1980,37.32,-0.0000360743,1.2,
-2026-11-14T16:59:15.181Z,93,xyz:EWY,xyz,SHORT,-1.2,0,-1.2,138.96,-0.5463,24.91,-0.0002174548,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,94,xyz:MRVL,xyz,SHORT,-1.2,0,-1.2,150.89,-1.1450,29.97,-0.0001766178,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,95,xyz:ARM,xyz,SHORT,-1.2,0,-1.2,184.71,-0.9685,30.93,-0.000154352,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,96,xyz:NBIS,xyz,SHORT,-1.2,0,-1.2,110.08,-2.3123,24.97,-0.0002815916,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,97,xyz:CXMT,xyz,SHORT,-1.2,0,-1.2,5.9437,-0.3591,34.56,-0.0000465469,1.2,
-2026-11-14T16:59:15.181Z,98,io:PRL,io,SHORT,1.2,0,1.2,1.4151,0.4488,39.56,-0.0004073341,1.2,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,99,xyz:META,xyz,SHORT,1,0,1,633.02,0.1329,40.18,-0.0001042781,1,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,100,xyz:ORCL,xyz,SHORT,-1,0,-1,122.53,-0.4938,32.63,-0.0000920796,1,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,101,xyz:JPY,xyz,LONG,1,1,0,159.63,-0.0031,53.59,0,1,
-2026-11-14T16:59:15.181Z,102,xyz:NATGAS,xyz,SHORT,-1,0,-1,3.6236,-0.1950,45.86,0.00000625,1,
-2026-11-14T16:59:15.181Z,103,xyz:SMSN,xyz,SHORT,-1,0,-1,147.48,-0.6560,27.39,-0.0002758529,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,104,xyz:GME,xyz,SHORT,1,0,1,25.239,-0.2481,29.43,-0.0001696399,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,105,xyz:RKLB,xyz,SHORT,-1,0,-1,59.353,-1.1162,27.37,-0.0000771218,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,106,xyz:DRAM,xyz,SHORT,-1,0,-1,41,-0.7134,28.28,-0.0002526985,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,107,xyz:BE,xyz,SHORT,-1,0,-1,184.74,-1.2760,28.96,-0.0001358686,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,108,xyz:ANT,xyz,SHORT,-1,0,-1,101.29,-0.1193,42.00,-7.656e-7,1,
-2026-11-14T16:59:15.181Z,109,io:ANTH,io,SHORT,-1,0,-1,1762.9,-0.1624,41.27,-0.0000048307,1,
-2026-11-14T16:59:15.181Z,110,BERA,,SHORT,-0.8,0,-0.8,0.09975,-2.1311,33.89,-0.0005174164,0.8,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,111,xyz:CBRS,xyz,SHORT,-0.8,0,-0.8,105.01,-0.6573,37.86,-0.0001837654,0.8,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,112,xyz:MRNA,xyz,SHORT,-0.8,0,-0.8,220.46,-0.7225,37.39,-0.0000513727,0.8,Funding-Crowding gegen Short (bereits überfüllt)
-2026-11-14T16:59:15.181Z,113,xyz:SNXX,xyz,SHORT,-0.8,0,-0.8,3.2679,-2.5796,28.57,-0.0006753462,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,114,xyz:TLT,xyz,SHORT,-0.8,0,-0.8,79.23,-0.1386,47.67,0.000137862,0.8,Funding-Crowding gegen Long
-2026-11-14T16:59:15.181Z,115,TRX,,LONG,0,0,0,0.30845,-0.2469,23.39,-0.0000845151,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,116,xyz:TSLA,xyz,LONG,0,0,0,384.08,-0.4017,28.62,-0.0001130524,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,117,xyz:GOLD,xyz,LONG,0,0,0,3844.6,-0.2272,24.72,-0.0000604864,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,118,xyz:PLTR,xyz,LONG,0,0,0,164.05,-0.5983,25.42,-0.0001607599,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,119,xyz:GOOGL,xyz,LONG,0,0,0,289.6,-0.4915,26.26,-0.0001611746,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,120,xyz:AMZN,xyz,LONG,0,0,0,262.02,-0.3533,28.04,-0.0000725206,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,121,xyz:LLY,xyz,LONG,0,0,0,1435.8,-0.0389,44.17,0.0000029512,1.2,
-2026-11-14T16:59:15.181Z,122,xyz:SKHX,xyz,LONG,0,0,0,863.37,-0.9627,23.61,-0.0002784338,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,123,xyz:CL,xyz,LONG,0,0,0,86.954,-0.0617,37.97,-0.0000309738,1,
-2026-11-14T16:59:15.181Z,124,xyz:BRENTOIL,xyz,LONG,0,0,0,92.996,-0.0202,41.20,-0.0000262223,0.8,
-2026-11-14T16:59:15.181Z,125,xyz:SP500,xyz,LONG,0,0,0,7498.9,-0.1607,29.33,-0.0000652169,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,126,xyz:SPCX,xyz,LONG,0,0,0,134.99,-0.7410,29.84,-0.0000652613,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,127,xyz:AVGO,xyz,LONG,0,0,0,337.21,-0.8158,27.62,-0.000127278,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
-2026-11-14T16:59:15.181Z,128,xyz:STRC,xyz,LONG,0,0,0,98.78,-0.2109,24.19,-0.0000284277,1.2,"RSI<30 überverkauft, Bounce-Risiko"
-2026-11-14T16:59:15.181Z,129,xyz:SKHY,xyz,LONG,0,0,0,127.83,-0.8450,25.13,-0.0002269216,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,1,io:SNDK,io,SHORT,-3.6,0,-3.6,838.06,-1.3662,26.50,-0.000035271,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,2,VVV,,SHORT,-3,0,-3,17.046,-2.3767,31.84,-0.000002045,1,
+2026-11-14T21:22:56.544Z,3,BTC,,SHORT,-2.4,0,-2.4,64483,-1.4629,23.81,-0.0000099697,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,4,SOL,,SHORT,-2.4,0,-2.4,69.971,-2.6064,17.71,-0.0000351398,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,5,AVAX,,SHORT,-2.4,0,-2.4,7.1219,-3.3302,13.82,-0.0000191156,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,6,BNB,,SHORT,-2.4,0,-2.4,578.45,-2.1433,19.69,0.0000071226,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,7,LTC,,SHORT,-2.4,0,-2.4,44.154,-2.4508,19.27,-0.0000243942,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,8,INJ,,SHORT,-2.4,0,-2.4,6.8296,-3.0467,23.76,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,9,CRV,,SHORT,-2.4,0,-2.4,0.19996,-3.2269,13.53,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,10,CFX,,SHORT,-2.4,0,-2.4,0.033127,-4.1918,8.85,-0.0000080829,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,11,AAVE,,SHORT,-2.4,0,-2.4,98.761,-2.7270,16.20,0.0000110129,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,12,kSHIB,,SHORT,-2.4,0,-2.4,0.003766,-2.5758,14.20,-0.0000122797,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,13,TIA,,SHORT,-2.4,0,-2.4,0.3333,-3.7549,14.56,-0.000043648,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,14,PENDLE,,SHORT,-2.4,0,-2.4,1.36915,-2.0868,23.53,0.0000097286,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,15,FET,,SHORT,-2.4,0,-2.4,0.124165,-3.4779,17.80,-0.0000335844,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,16,NEAR,,SHORT,-2.4,0,-2.4,2.9415,-3.4651,16.48,-0.0000194726,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,17,STRK,,SHORT,-2.4,0,-2.4,0.0325,-2.9166,23.03,-0.0000163999,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,18,ENA,,SHORT,-2.4,0,-2.4,0.113,-3.9274,16.25,-0.0000435865,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,19,EIGEN,,SHORT,-2.4,0,-2.4,0.1278,-3.8902,13.25,0.0000036128,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,20,HYPE,,SHORT,-2.4,-1.2,-2.4,62.054,-2.9428,18.66,0.0000921322,1.2,"Funding-Crowding gegen Long | RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,21,PENGU,,SHORT,-2.4,0,-2.4,0.004702,-5.7507,8.25,-0.0000308828,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,22,MORPHO,,SHORT,-2.4,0,-2.4,1.7425,-2.5098,19.08,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,23,XPL,,SHORT,-2.4,0,-2.4,0.041511,-3.5244,17.57,-0.0000232985,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,24,MON,,SHORT,-2.4,0,-2.4,0.01468,-2.4438,17.96,-0.0000258178,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,25,ICP,,SHORT,-2.4,0,-2.4,2.137,-3.3891,15.39,-0.0000164398,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,26,AERO,,SHORT,-2.4,0,-2.4,0.42491,-2.6359,26.12,0.0000039938,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,27,LIT,,SHORT,-2.4,0,-2.4,2.7004,-3.4405,24.27,-0.0000380041,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,28,USELESS,,SHORT,-2.4,0,-2.4,0.094385,-6.2451,19.54,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,29,xyz:AAPL,xyz,LONG,2.4,2.4,0,356.29,-0.0145,54.90,0.00000625,1.2,
+2026-11-14T21:22:56.544Z,30,xyz:SNDK,xyz,SHORT,-2.4,0,-2.4,838.13,-1.3645,26.75,-0.0003040729,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,31,xyz:CRWV,xyz,SHORT,-2.4,0,-2.4,50.383,-1.3030,27.17,-0.0002919918,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,32,xyz:SPCX,xyz,SHORT,-2.4,1.2,-2.4,134.39,-0.7119,37.71,-0.0001965801,1.2,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,33,xyz:ZHIPU,xyz,SHORT,-2.4,0,-2.4,47.558,-1.7278,11.80,-0.0021360674,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,34,ETH,,SHORT,-2,0,-2,1775.9,-1.9311,21.68,-0.0000348817,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,35,OP,,SHORT,-2,0,-2,0.07717,-3.7708,14.03,-0.0000046857,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,36,ARB,,SHORT,-2,0,-2,0.12664,-2.8515,21.15,-0.0000188518,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,37,kPEPE,,SHORT,-2,0,-2,0.003781,-3.5856,19.24,-0.0000262815,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,38,XRP,,SHORT,-2,0,-2,0.91667,-2.0695,16.87,-0.0000117237,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,39,BCH,,SHORT,-2,0,-2,200.5,-2.1349,19.19,-0.0000174888,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,40,IMX,,SHORT,-2,0,-2,0.0948,-2.7151,28.26,-0.000148647,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,41,WIF,,SHORT,-2,0,-2,0.12622,-3.5101,10.63,-0.000032794,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,42,GRASS,,SHORT,-2,0,-2,0.37299,-3.1036,26.69,0.0000033723,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,43,PURR,,SHORT,-2,0,-2,0.078027,-3.3214,18.51,0.0000125,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,44,VIRTUAL,,SHORT,-2,0,-2,0.42557,-4.0133,14.69,5.739e-7,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,45,PUMP,,SHORT,-2,0,-2,0.002788,-4.6288,11.44,-0.0000211489,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,46,WLFI,,SHORT,-2,0,-2,0.046236,-0.5956,36.55,-0.0000076344,1,
+2026-11-14T21:22:56.544Z,47,ASTER,,SHORT,-2,0,-2,0.5117,-4.5285,22.54,0.0000012859,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,48,CASHCAT,,SHORT,-2,0,-2,0.039625,-4.8926,22.33,0.0000125,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,49,PONS,,SHORT,-2,0,-2,0.11195,-5.8403,18.08,0.0000125,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,50,xyz:HOOD,xyz,SHORT,-2,0,-2,73.812,-1.3492,21.90,-0.0003994877,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,51,xyz:SKHX,xyz,SHORT,-2,1,-2,859.5,-1.0849,28.47,-0.0002100619,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,52,xyz:SNXX,xyz,SHORT,-2,0,-2,3.2039,-2.8396,26.98,-0.0006125356,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,53,DOGE,,LONG,1.8,1.8,-0.6,0.056953,-2.5843,16.11,-0.0000293551,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,54,ZRO,,LONG,1.8,1.8,0.6,1.3586,-2.1279,26.48,-0.0000747725,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,55,DOT,,LONG,1.8,1.8,-0.6,0.70321,-3.0760,13.64,0.0000108528,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,56,ZEC,,LONG,1.8,1.8,-0.6,824.68,-2.8868,22.11,0.0000024907,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,57,XMR,,LONG,1.8,1.8,0.6,472.72,-2.3382,17.08,-0.0001993875,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,58,xyz:SILVER,xyz,LONG,1.8,1.8,1.8,46.956,-0.9659,14.06,-0.0006958337,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,59,xyz:UNITREE,xyz,LONG,1.8,1.8,1.8,98.855,-0.7697,18.87,-0.000112758,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,60,ETHFI,,SHORT,-1.6,0,-1.6,0.48107,-4.5841,14.05,0.0000125,0.8,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,61,io:NVDA,io,SHORT,-1.6,0,-1.6,158.63,-0.6927,32.60,-0.000005744,0.8,
+2026-11-14T21:22:56.544Z,62,UNI,,LONG,1.5,1.5,-0.5,4.7202,-4.6708,16.96,-0.000034232,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,63,ADA,,LONG,1.5,1.5,-0.5,0.1474,-2.9243,15.28,-0.000031489,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,64,ONDO,,LONG,1.5,1.5,-0.5,0.29198,-3.3822,15.35,-0.0000091678,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,65,HBAR,,LONG,1.5,1.5,0.5,0.056058,-2.1746,21.37,-0.0000572335,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,66,XLM,,LONG,1.5,1.5,-0.5,0.1326,-2.1585,18.77,-0.000028313,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,67,xyz:COPPER,xyz,LONG,1.5,1.5,1.5,6.1244,-0.2623,32.61,-0.00010294,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,68,xyz:SOXL,xyz,LONG,1.5,1.5,-0.5,53.954,-2.1971,30.16,-0.000067297,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,69,SUI,,SHORT,-1.2,0,-1.2,0.69093,-2.9734,16.97,-0.0000546811,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,70,LINK,,SHORT,-1.2,0,-1.2,8.7762,-2.5770,19.40,-0.0000577109,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,71,APT,,SHORT,-1.2,0,-1.2,0.4385,-4.2874,11.94,-0.000077149,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,72,FIL,,SHORT,-1.2,0,-1.2,0.60882,-3.4877,14.03,-0.0000510404,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,73,kBONK,,SHORT,-1.2,0,-1.2,0.002231,-3.7493,17.02,-0.0000524197,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,74,TAO,,SHORT,-1.2,0,-1.2,181.72,-3.2828,18.17,-0.0000587171,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,75,MNT,,SHORT,-1.2,0,-1.2,0.37137,-1.8324,20.01,-0.0002061742,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,76,SPX,,SHORT,-1.2,0,-1.2,0.2881,-3.6152,18.76,-0.0000846029,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,77,TRUMP,,SHORT,-1.2,0,-1.2,0.92166,-3.7226,11.18,-0.000090658,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,78,MEGA,,LONG,1.2,1.2,0,0.045562,-0.3456,53.16,0.0000125,1.2,
+2026-11-14T21:22:56.544Z,79,CC,,SHORT,-1.2,0,-1.2,0.076878,-2.5830,16.67,-0.0001189974,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,80,xyz:GOLD,xyz,SHORT,1.2,0,1.2,3796.9,-0.4724,16.48,-0.0004894441,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,81,xyz:COIN,xyz,SHORT,-1.2,0,-1.2,117.71,-1.6992,16.96,-0.0007249138,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,82,xyz:MSTR,xyz,SHORT,-1.2,0,-1.2,99.47,-2.3734,20.50,-0.0009588876,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,83,xyz:CRCL,xyz,SHORT,-1.2,0,-1.2,57.378,-1.7332,19.54,-0.0007605846,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,84,xyz:PURRDAT,xyz,SHORT,-1.2,0,-1.2,7.7315,-2.3269,21.10,-0.0011167294,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,85,xyz:CBRS,xyz,SHORT,-1.2,0,-1.2,103.86,-0.8515,32.44,-0.0003708697,1.2,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,86,xyz:NBIS,xyz,SHORT,-1.2,0,-1.2,108.77,-2.2317,26.38,-0.0004028233,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,87,xyz:CXMT,xyz,SHORT,-1.2,0,-1.2,5.9247,-0.3552,31.89,-0.0002393206,1.2,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,88,xyz:IREN,xyz,LONG,1.2,1.2,-0.4,16.704,-2.1069,17.39,-0.0006187641,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,89,WLD,,SHORT,-1,0,-1,0.24938,-3.7261,16.67,-0.0000890589,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,90,JUP,,SHORT,-1,0,-1,0.23975,-1.3282,29.57,-0.0001081023,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,91,W,,SHORT,-1,0,-1,0.00845,-3.2624,13.84,-0.0001810863,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,92,FARTCOIN,,SHORT,-1,0,-1,0.08726,-4.3029,10.47,-0.0000858113,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,93,CHIP,,SHORT,-1,0,-1,0.025492,-4.3285,9.68,-0.0000679445,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,94,GRAM,,SHORT,-1,0,-1,1.0315,-1.7987,29.76,-0.0001924332,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,95,xyz:XYZ100,xyz,SHORT,-1,0,-1,27507,-0.3615,31.48,-0.0000776908,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,96,xyz:NVDA,xyz,SHORT,-1,0,-1,158.7,-0.6904,32.40,-0.0001112294,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,97,xyz:INTC,xyz,SHORT,-1,0,-1,56.524,-1.1779,24.14,-0.0003110406,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,98,xyz:META,xyz,SHORT,1,0,1,630.02,-0.1231,39.29,-0.0001334675,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,99,xyz:AMZN,xyz,SHORT,-1,0,-1,262.42,-0.3680,35.90,-0.0000451314,1,
+2026-11-14T21:22:56.544Z,100,xyz:AMD,xyz,SHORT,-1,0,-1,515.78,-1.1629,27.71,-0.0001450442,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,101,xyz:KIOXIA,xyz,SHORT,-1,0,-1,52.482,-1.5976,26.15,-0.0004313141,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,102,xyz:BRENTOIL,xyz,SHORT,1,0,1,92.74,-0.1420,37.51,-0.00006784,1,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,103,xyz:SP500,xyz,SHORT,-1,0,-1,7497.8,-0.1972,34.31,-0.0000343127,1,
+2026-11-14T21:22:56.544Z,104,xyz:MRVL,xyz,SHORT,-1,0,-1,149.51,-1.1847,26.77,-0.0001686465,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,105,xyz:RKLB,xyz,SHORT,-1,0,-1,59.271,-0.9854,29.75,-0.0000339705,1,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,106,xyz:SKHY,xyz,SHORT,-1,0,-1,127.23,-0.9328,28.43,-0.0002055187,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,107,xyz:KORU,xyz,SHORT,-1,0,-1,6.8896,-2.3849,25.59,-0.0005359666,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,108,io:ANTH,io,SHORT,-1,0,-1,1767.9,-0.1575,47.44,-0.0000083092,1,
+2026-11-14T21:22:56.544Z,109,TRX,,SHORT,0.8,0,0.8,0.30733,-0.4564,28.13,-0.0000803893,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,110,BERA,,SHORT,-0.8,0,-0.8,0.08862,-5.0875,23.00,-0.0005267711,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,111,xyz:TSM,xyz,SHORT,-0.8,0,-0.8,390.13,-0.5800,25.54,-0.0001042885,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,112,xyz:JPY,xyz,LONG,0.8,0.8,0,159.68,0.0175,58.01,0,0.8,
+2026-11-14T21:22:56.544Z,113,xyz:CL,xyz,SHORT,0.8,0,0.8,86.816,-0.1818,36.78,-0.0000566143,0.8,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,114,xyz:TLT,xyz,LONG,-0.8,-0.8,-0.8,78.951,-0.1364,40.99,0.0000635551,0.8,Funding-Crowding gegen Long
+2026-11-14T21:22:56.544Z,115,PAXG,,LONG,0,0,0,3779.7,-0.4970,15.89,0.0000125,1.2,"RSI<30 überverkauft, Bounce-Risiko"
+2026-11-14T21:22:56.544Z,116,xyz:TSLA,xyz,LONG,0,0,0,383.39,-0.4867,31.99,-0.0001235945,1.2,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,117,xyz:PLTR,xyz,LONG,0,0,0,163.19,-0.7029,25.40,-0.000224504,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,118,xyz:MSFT,xyz,LONG,0,0,0,517.95,-0.1507,41.45,-0.0000650909,1.2,Funding-Crowding gegen Short (bereits überfüllt)
+2026-11-14T21:22:56.544Z,119,xyz:GOOGL,xyz,LONG,0,0,0,287.93,-0.6526,28.48,-0.0002865614,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,120,xyz:MU,xyz,LONG,0,0,0,745.43,-0.8317,28.93,-0.0003685398,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,121,xyz:SMSN,xyz,LONG,0,0,0,146.42,-0.9123,28.07,-0.0001997236,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,122,xyz:GME,xyz,LONG,0,0,0,25.039,-0.5692,24.64,-0.0002829639,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,123,xyz:EWY,xyz,LONG,0,0,0,138.14,-0.7354,25.15,-0.0001637134,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,124,xyz:DRAM,xyz,LONG,0,0,0,40.745,-0.9149,29.22,-0.0002161628,1.2,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,125,xyz:ARM,xyz,LONG,0,0,0,183.65,-0.9619,27.29,-0.0001375669,0.8,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,126,xyz:AVGO,xyz,LONG,0,0,0,335.63,-0.8392,28.34,-0.0001806387,1,"RSI<30 überverkauft, Bounce-Risiko | Funding-Crowding gegen Short (bereits überfüllt)"
+2026-11-14T21:22:56.544Z,127,xyz:STRC,xyz,LONG,0,0,0,98.301,-0.3609,18.22,-0.000045547,1,"RSI<30 überverkauft, Bounce-Risiko"
