@@ -21,6 +21,9 @@ const { runScan, scoringCsv, csvLine, SCORING_HEADER } = require('./screen-core.
   fs.appendFileSync(histFile, scoringCsv(ts, scan.ranked, false));
   fs.writeFileSync(path.join(out, 'latest_ranking.csv'), scoringCsv(ts, scan.ranked));
   writeChart7d(histFile, path.join(out, 'chart_7d.json'), ts);
+  // Signal-Liga (Spielseiten): Fehler dort dürfen die Signaldaten nicht blockieren
+  try { await require('./game-collect.js').updateGame(out, scan, histFile, ts); }
+  catch (e) { console.error('Signal-Liga übersprungen:', e); }
   if (process.env.RAW === '1') {
     fs.writeFileSync(path.join(out, 'latest_raw.json.gz'),
       zlib.gzipSync(JSON.stringify({ ts: new Date(ts).toISOString(), assets: scan.raw })));

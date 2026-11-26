@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<title>Signal-Liga · Transfermarkt</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<header>
+  <div id="nav"></div>
+  <h1>Transfermarkt</h1>
+  <div id="banner"></div>
+</header>
+<main>
+  <div class="stats" id="budget"></div>
+  <div class="chips" id="catChips"></div>
+  <div class="chips">
+    <span id="dirChips" style="display:contents"></span>
+    <select id="sort" aria-label="Sortierung">
+      <option value="mw">Sortierung: Marktwert</option>
+      <option value="avg">Ø-Punkte 4 W</option>
+      <option value="ppd">Punkte pro 10 $</option>
+      <option value="tech">Technik</option>
+    </select>
+    <input type="search" id="q" placeholder="Suchen" aria-label="Suchen">
+  </div>
+  <div class="row head"><span>Listing</span><span class="r">MW</span><span class="r">Ø 4 W</span><span>Form</span><span class="c">Tech</span><span class="r ppd">Pkt/10$</span><span></span></div>
+  <div id="list"><div class="empty-msg">Lade Transfermarkt…</div></div>
+  <p class="small muted" id="foot"></p>
+</main>
+<script src="game-core.js"></script>
+<script src="game-ui.js"></script>
+<script>
+const G = GameCore;
+document.getElementById('nav').innerHTML = UI.nav('transfermarkt.html');
+const state = { cat: 'Alle', dir: 'Alle', sort: 'mw', q: '' };
+let snap = null, st = null, team = null, locked = false;
+const TECH_ORDER = { '✅': 0, '*️⃣': 1, '❔': 2, '⛔️': 3 };
+
+function chips(el, values, key) {
+  document.getElementById(el).innerHTML = values.map(([v, l]) =>
+    `<button class="chip ${state[key] === v ? 'on' : ''}" onclick="state['${key}']='${v}';render()">${l}</button>`).join('');
+}
+const ppd = l => (l.avg === null ? null : l.avg / (l.mw / 10));
+
+function render() {
+  chips('catChips', [['Alle', 'Alle'], ['Krypto', 'Krypto'], ['Aktien', 'Aktien'], ['Rohstoffe', 'Rohstoffe']], 'cat');
+  chips('dirChips', [['Alle', 'Long + Short'], ['L', '▲ Long'], ['S', '▼ Short']], 'dir');
+  if (!snap) return;
+  const v = G.validateTeam(team.picks, snap.listings);
+  document.getElementById('budget').innerHTML = `
+    <div class="stat"><div class="k">Im Kader</div><div class="v">${UI.money(v.cost)}</div></div>
+    <div class="stat"><div class="k">Rest</div><div class="v ${v.cost > G.GAME.BUDGET ? 'neg' : ''}">${UI.money(G.GAME.BUDGET - v.cost)}</div></div>
+    <div class="stat"><div class="k">Picks · Formation</div><div class="v">${team.picks.length}/10 · ${v.formation}</div></div>`;
+  const q = state.q.trim().toUpperCase();
+  let rows = snap.listings.filter(l => (state.cat === 'Alle' || l.cat === state.cat) && (state.dir === 'Alle' || l.dir === state.dir)
+    && (!q || l.label.toUpperCase().includes(q)));
+  const key = { mw: l => -l.mw, avg: l => -(l.avg ?? -1e9), ppd: l => -(ppd(l) ?? -1e9), tech: l => TECH_ORDER[l.tech] * 1e6 - l.mw }[state.sort];
+  rows.sort((a, b) => key(a) - key(b));
+  const sel = new Set(team.picks);
+  document.getElementById('list').innerHTML = rows.length ? rows.map(l => {
+    const on = sel.has(l.id), p = ppd(l);
+    return `<div class="row ${on ? 'sel' : ''}">
+      <div class="name"><b>${UI.esc(l.label)}</b><span>${l.cat}${l.dex ? ' · ' + UI.esc(l.dex) : ''}</span></div>
+      <span class="r"><b>${UI.mwFmt(l.mw)}</b></span>
+      <span class="r ${UI.ptsClass(l.avg)}">${UI.pts(l.avg)}</span>
+      ${UI.formBars(l.form)}
+      <span class="c" title="${G.TECH[l.tech]}">${l.tech}</span>
+      <span class="r ppd">${p === null ? '–' : UI.nf(p)}</span>
+      <button class="add ${on ? 'on' : ''}" ${locked ? 'disabled' : ''} aria-label="${on ? 'Aus dem Team entfernen' : 'Ins Team holen'}" onclick="toggle('${l.id}')">${on ? '✓' : '+'}</button>
+    </div>`;
+  }).join('') : '<div class="empty-msg">Keine Treffer.</div>';
+}
+
+function toggle(id) {
+  if (locked) return;
+  const i = team.picks.indexOf(id);
+  if (i >= 0) { team.picks.splice(i, 1); if (team.captain === id) team.captain = null; }
+  else {
+    if (team.picks.length >= G.GAME.PICKS) { alert('Kader ist voll (10/10). Entferne zuerst einen Pick.'); return; }
+    team.picks.push(id);
+  }
+  UI.saveTeam(snap.id, team);
+  render();
+}
+
+document.getElementById('sort').onchange = e => { state.sort = e.target.value; render(); };
+document.getElementById('q').oninput = e => { state.q = e.target.value; render(); };
+
+(async () => {
+  st = G.gameState();
+  document.getElementById('banner').innerHTML = UI.phaseBanner(st);
+  render();
+  snap = await UI.tryJson(st.active.id + '.json');
+  if (!snap) {
+    document.getElementById('list').innerHTML = `<div class="empty-msg">Der Transfermarkt für KW ${st.active.kw} ist noch nicht erstellt. Er entsteht beim nächsten stündlichen Lauf des Screeners (Samstag ab 20:00).</div>`;
+    return;
+  }
+  locked = Date.now() >= snap.start;
+  team = UI.loadTeam(snap.id);
+  document.getElementById('foot').innerHTML =
+    `Eingefroren ${UI.when(snap.frozenAt)}${snap.late ? ' (nachträglich erstellt)' : ''} · Form = Punkte der Spieltage ${snap.formIds.map(x => 'KW ' + x.slice(-2)).join(', ')} · ` +
+    `Technik ist eine unabhängige Einschätzung der Signale, keine Punkteprognose · Deine Aufstellung wird nur auf diesem Gerät gespeichert.` +
+    (locked ? ' · Spieltag läuft: Transfers gesperrt.' : '');
+  render();
+})();
+</script>
+</body>
+</html>
