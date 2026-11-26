@@ -21,14 +21,14 @@
   <div class="chips">
     <span id="dirChips" style="display:contents"></span>
     <select id="sort" aria-label="Sortierung">
-      <option value="mw">Sortierung: Marktwert</option>
-      <option value="avg">Ø-Punkte 4 W</option>
+      <option value="avg">Sortierung: Ø-Score pro Woche</option>
+      <option value="mw">Marktwert</option>
       <option value="ppd">Punkte pro 10 $</option>
       <option value="tech">Technik</option>
     </select>
     <input type="search" id="q" placeholder="Suchen" aria-label="Suchen">
   </div>
-  <div class="row head"><span>Listing</span><span class="r">MW</span><span class="r">Ø 4 W</span><span>Form</span><span class="c">Tech</span><span class="r ppd">Pkt/10$</span><span></span></div>
+  <div class="row head"><span>Listing</span><span class="r">MW</span><span class="r">Ø/Woche</span><span>Form</span><span class="c">Tech</span><span class="r ppd">Pkt/10$</span><span></span></div>
   <div id="list"><div class="empty-msg">Lade Transfermarkt…</div></div>
   <p class="small muted" id="foot"></p>
 </main>
@@ -37,7 +37,7 @@
 <script>
 const G = GameCore;
 document.getElementById('nav').innerHTML = UI.nav('transfermarkt.html');
-const state = { cat: 'Alle', dir: 'Alle', sort: 'mw', q: '' };
+const state = { cat: 'Alle', dir: 'Alle', sort: 'avg', q: '' };
 let snap = null, st = null, team = null, locked = false;
 const TECH_ORDER = { '✅': 0, '*️⃣': 1, '❔': 2, '⛔️': 3 };
 
@@ -103,7 +103,7 @@ document.getElementById('q').oninput = e => { state.q = e.target.value; render()
   locked = Date.now() >= snap.start;
   team = UI.loadTeam(snap.id);
   document.getElementById('foot').innerHTML =
-    `Eingefroren ${UI.when(snap.frozenAt)}${snap.late ? ' (nachträglich erstellt)' : ''} · Form = Punkte der Spieltage ${snap.formIds.map(x => 'KW ' + x.slice(-2)).join(', ')} · ` +
+    `Eingefroren ${UI.when(snap.frozenAt)}${snap.late ? ' (nachträglich erstellt)' : ''} · Ø/Woche = Durchschnitt der Scores der letzten 4 Spieltage (${snap.formIds.map(x => 'KW ' + x.slice(-2)).join(', ')}), Form = diese 4 Scores einzeln · ` +
     `Technik ist eine unabhängige Einschätzung der Signale, keine Punkteprognose · Deine Aufstellung wird nur auf diesem Gerät gespeichert.` +
     (locked ? ' · Spieltag läuft: Transfers gesperrt.' : '');
   render();
