@@ -79,7 +79,7 @@ function render() {
 function toggle(id) {
   if (locked) return;
   const i = team.picks.indexOf(id);
-  if (i >= 0) { team.picks.splice(i, 1); if (team.captain === id) team.captain = null; }
+  if (i >= 0) team.picks.splice(i, 1);
   else {
     if (team.picks.length >= G.GAME.PICKS) { alert('Kader ist voll (10/10). Entferne zuerst einen Pick.'); return; }
     team.picks.push(id);

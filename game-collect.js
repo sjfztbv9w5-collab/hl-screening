@@ -131,8 +131,8 @@ async function updateGame(out, scan, histFile, now = Date.now()) {
       snap = {
         id: st.active.id, kw: st.active.kw, start: st.active.start, end: st.active.end, frozenAt: now,
         late: now > st.active.start, formIds: formSt.map(s => s.id), listings,
-        algo: algo && { picks: algo.picks, captain: algo.captain, formation: algo.formation },
-        passiv: { picks: passivPicks, captain: null }
+        algo: algo && { picks: algo.picks, formation: algo.formation },
+        passiv: { picks: passivPicks }
       };
       writeJson(file(st.active.id), snap);
       console.log(`Signal-Liga: Transfermarkt ${st.active.id} eingefroren (${listings.length} Listings).`);

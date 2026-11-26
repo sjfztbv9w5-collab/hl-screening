@@ -5,7 +5,6 @@ const GAME = {
   BUDGET: 500,
   MIN_MW: 5,
   PICKS: 10,
-  POINT_CAP: 2000,
   FORMATIONS: ['4-4-2', '4-3-3', '3-4-3', '5-3-2', '3-5-2', '4-5-1', '5-4-1'],   // Krypto-Aktien-Rohstoffe
   CATS: ['Krypto', 'Aktien', 'Rohstoffe'],
   // Technik-Schwellen auf der Skala des Screeners (Netto-Score = Long-Score + Short-Score, typ. −4…+4)
@@ -122,8 +121,7 @@ function priceAt(candles, t) {
 }
 function pointsFor(entry, exit, dir) {
   if (!(entry > 0) || !(exit > 0)) return null;
-  const p = Math.round((exit / entry - 1) * 10000) * (dir === 'S' ? -1 : 1);
-  return Math.max(-GAME.POINT_CAP, Math.min(GAME.POINT_CAP, p));
+  return Math.round((exit / entry - 1) * 10000) * (dir === 'S' ? -1 : 1);
 }
 
 // Technik-Einstufung aus täglichen Ø-Netto-Scores (chronologisch, letzter Wert = Stichtag).
@@ -149,97 +147,76 @@ function parseFormation(f) { return f.split('-').map(Number); }
 function formationOf(counts) { return counts.join('-'); }
 
 // ---------- Optimierer ----------
-// Bestes Team: 10 Listings, Budget, erlaubte Formationen, genau ein Kapitän (Wert × 2).
-// items: [{id, cat, mw, value}] -> {total, formation, picks:[ids], captain}
+// Bestes Team: 10 Listings, Budget, erlaubte Formationen.
+// items: [{id, cat, mw, value}] -> {total, formation, picks:[ids], cost}
 function bestTeam(items, budget = GAME.BUDGET) {
   const B = Math.round(budget * 2);
-  const NEG = -1e15;
-  const perCat = GAME.CATS.map(c => items.filter(i => i.cat === c && i.value !== null && i.value !== undefined));
-  const maxK = 6;
-  // Je Kategorie: dp[k][f][b] = max Summe mit k Picks, f Kapitäne (0/1), Kosten genau b (halbe $)
-  const catRes = perCat.map(list => {
-    const n = list.length;
-    const size = (maxK + 1) * 2 * (B + 1);
-    const idx = (k, f, b) => (k * 2 + f) * (B + 1) + b;
+  const NEG = -1e15, maxK = 6;
+  const catRes = GAME.CATS.map(c => {
+    const list = items.filter(i => i.cat === c && i.value !== null && i.value !== undefined);
+    const idx = (k, b) => k * (B + 1) + b;
     const layers = [];
-    let dp = new Float64Array(size).fill(NEG);
-    dp[idx(0, 0, 0)] = 0;
-    for (let i = 0; i < n; i++) {
-      const it = list[i], w = Math.round(it.mw * 2), v = it.value;
-      const nd = Float64Array.from(dp);
-      const choice = new Uint8Array(size);          // 0 = nicht genommen, 1 = genommen, 2 = als Kapitän
-      for (let k = 0; k < maxK; k++) for (let f = 0; f < 2; f++) for (let b = 0; b + w <= B; b++) {
-        const cur = dp[idx(k, f, b)];
+    let dp = new Float64Array((maxK + 1) * (B + 1)).fill(NEG);
+    dp[idx(0, 0)] = 0;
+    list.forEach(it => {
+      const w = Math.round(it.mw * 2), nd = Float64Array.from(dp), taken = new Uint8Array(dp.length);
+      for (let k = 0; k < maxK; k++) for (let b = 0; b + w <= B; b++) {
+        const cur = dp[idx(k, b)];
         if (cur === NEG) continue;
-        const a = idx(k + 1, f, b + w);
-        if (cur + v > nd[a]) { nd[a] = cur + v; choice[a] = 1; }
-        if (f === 0) {
-          const c = idx(k + 1, 1, b + w);
-          if (cur + 2 * v > nd[c]) { nd[c] = cur + 2 * v; choice[c] = 2; }
-        }
+        const t = idx(k + 1, b + w);
+        if (cur + it.value > nd[t]) { nd[t] = cur + it.value; taken[t] = 1; }
       }
-      layers.push(choice);
-      dp = nd;
-    }
-    const recon = (k, f, b) => {
-      const picks = []; let cap = null;
-      for (let i = n - 1; i >= 0 && k > 0; i--) {
-        const ch = layers[i][idx(k, f, b)];
-        if (!ch) continue;
-        picks.push(list[i].id);
-        if (ch === 2) { cap = list[i].id; f = 0; }
-        b -= Math.round(list[i].mw * 2); k--;
+      layers.push(taken); dp = nd;
+    });
+    const recon = (k, b) => {
+      const picks = [];
+      for (let i = list.length - 1; i >= 0 && k > 0; i--) {
+        if (!layers[i][idx(k, b)]) continue;
+        picks.push(list[i].id); b -= Math.round(list[i].mw * 2); k--;
       }
-      return { picks, cap };
+      return picks;
     };
     return { dp, idx, recon };
   });
+  const [A, Bc, C] = catRes;
   let best = null;
   for (const f of GAME.FORMATIONS) {
     const [k1, k2, k3] = parseFormation(f);
-    // Kategorien 1 und 2 kombinieren (Kosten genau), danach Kategorie 3 mit Restbudget
-    for (const capCat of [0, 1, 2]) {
-      const fl = [0, 0, 0]; fl[capCat] = 1;
-      const A = catRes[0], Bc = catRes[1], C = catRes[2];
-      // bestC[r] = max über Kosten ≤ r
-      const bestC = new Float64Array(B + 1).fill(NEG), argC = new Int32Array(B + 1).fill(-1);
-      for (let b = 0; b <= B; b++) {
-        const v = C.dp[C.idx(k3, fl[2], b)];
-        if (b > 0 && bestC[b - 1] >= v) { bestC[b] = bestC[b - 1]; argC[b] = argC[b - 1]; }
-        else { bestC[b] = v; argC[b] = v === NEG ? -1 : b; }
-      }
-      for (let a = 0; a <= B; a++) {
-        const va = A.dp[A.idx(k1, fl[0], a)];
-        if (va === NEG) continue;
-        for (let b = 0; a + b <= B; b++) {
-          const vb = Bc.dp[Bc.idx(k2, fl[1], b)];
-          if (vb === NEG) continue;
-          const r = B - a - b, vc = bestC[r];
-          if (vc === NEG) continue;
-          const tot = va + vb + vc;
-          if (!best || tot > best.total) best = { total: tot, formation: f, a, b, c: argC[r], fl: fl.slice() };
-        }
+    const bestC = new Float64Array(B + 1).fill(NEG), argC = new Int32Array(B + 1).fill(-1);
+    for (let b = 0; b <= B; b++) {
+      const v = C.dp[C.idx(k3, b)];
+      if (b > 0 && bestC[b - 1] >= v) { bestC[b] = bestC[b - 1]; argC[b] = argC[b - 1]; }
+      else { bestC[b] = v; argC[b] = v === NEG ? -1 : b; }
+    }
+    for (let a = 0; a <= B; a++) {
+      const va = A.dp[A.idx(k1, a)];
+      if (va === NEG) continue;
+      for (let b = 0; a + b <= B; b++) {
+        const vb = Bc.dp[Bc.idx(k2, b)];
+        if (vb === NEG) continue;
+        const vc = bestC[B - a - b];
+        if (vc === NEG) continue;
+        if (!best || va + vb + vc > best.total) best = { total: va + vb + vc, formation: f, a, b, c: argC[B - a - b] };
       }
     }
   }
   if (!best) return null;
   const [k1, k2, k3] = parseFormation(best.formation);
-  const parts = [catRes[0].recon(k1, best.fl[0], best.a), catRes[1].recon(k2, best.fl[1], best.b), catRes[2].recon(k3, best.fl[2], best.c)];
   return {
     total: Math.round(best.total), formation: best.formation,
-    picks: parts.flatMap(p => p.picks), captain: parts.map(p => p.cap).find(x => x) || null,
+    picks: [...A.recon(k1, best.a), ...Bc.recon(k2, best.b), ...C.recon(k3, best.c)],
     cost: (best.a + best.b + best.c) / 2
   };
 }
 
-// Punkte eines Teams: Summe, Kapitän doppelt
+// Punkte eines Teams: einfache Summe der Picks (kein Kapitän, kein Deckel)
 function teamPoints(team, points) {
   if (!team || !team.picks) return null;
   let s = 0, any = false;
   team.picks.forEach(id => {
     const p = points[id];
     if (p === null || p === undefined) return;
-    any = true; s += p * (id === team.captain ? 2 : 1);
+    any = true; s += p;
   });
   return any ? s : null;
 }

@@ -40,10 +40,10 @@ async function show(id) {
   const pitch = `<div class="pitch gold">${lines.map(([lbl, cat]) => {
     const ls = tdw.picks.map(x => byId[x]).filter(l => l && l.cat === cat);
     return `<div class="line"><div class="lbl">${lbl}</div><div class="cards">${ls.map(l => {
-      const cap = l.id === tdw.captain, p = res.points[l.id];
-      return `<div class="card ${mineSet.has(l.id) ? 'mine' : ''}">${cap ? '<span class="cbadge">C</span>' : ''}
+      const p = res.points[l.id];
+      return `<div class="card ${mineSet.has(l.id) ? 'mine' : ''}">
         <b>${UI.esc(l.label)}</b><span class="muted">${UI.mwFmt(l.mw)} · ${l.tech}</span>
-        <div class="p ${UI.ptsClass(p)}">${UI.pts(cap ? p * 2 : p)}</div>
+        <div class="p ${UI.ptsClass(p)}">${UI.pts(p)}</div>
         <span class="small" style="color:${mineSet.has(l.id) ? 'var(--lime)' : 'var(--muted)'}">${mineSet.has(l.id) ? '✓ auch bei dir' : 'nicht bei dir'}</span></div>`;
     }).join('')}</div></div>`;
   }).join('')}<div class="small" style="text-align:center;color:#e9d9a6">Budget ${UI.money(tdw.cost)} von ${UI.money(G.GAME.BUDGET)} · gleiche Regeln wie dein Team</div></div>`;

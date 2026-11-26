@@ -14,7 +14,7 @@ const UI = (() => {
   const mem = {};
   function loadTeam(id) {
     try { const s = localStorage.getItem('sl_team_' + id); if (s) return JSON.parse(s); } catch (e) {}
-    return mem[id] || { picks: [], captain: null };
+    return mem[id] || { picks: [] };
   }
   function saveTeam(id, team) {
     mem[id] = team;

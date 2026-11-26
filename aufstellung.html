@@ -28,7 +28,7 @@
   <div class="panel list" id="duels"></div>
   <h2>Saison</h2>
   <div class="stats" id="season"></div>
-  <p class="small muted">Punkte = Wochen-% × 100 je Listing (▼ Short zählt die Gegenbewegung), Deckel ±2.000 je Pick, Kapitän × 2. Echter PnL = Positionen in MW-Größe ohne Hebel.</p>
+  <p class="small muted">Punkte = Wochen-% × 100 je Listing (▼ Short zählt die Gegenbewegung), Team-Punkte = Summe aller 10 Picks. Echter PnL = Positionen in MW-Größe ohne Hebel.</p>
 </main>
 <script src="game-core.js"></script>
 <script src="game-ui.js"></script>
@@ -37,11 +37,10 @@ const G = GameCore;
 document.getElementById('nav').innerHTML = UI.nav('aufstellung.html');
 let st, snap, team, live, byId, locked;
 
-function card(l, p, isCap) {
-  return `<div class="card ${isCap ? 'cap' : ''}" ${locked ? '' : `onclick="setCaptain('${l.id}')"`}>
-    ${isCap ? '<span class="cbadge">C</span>' : ''}
+function card(l, p) {
+  return `<div class="card">
     <b>${UI.esc(l.label)}</b><span class="muted">${UI.mwFmt(l.mw)} · ${l.tech}</span>
-    <div class="p ${UI.ptsClass(p)}">${p === null ? '–' : UI.pts(isCap ? p * 2 : p)}</div>
+    <div class="p ${UI.ptsClass(p)}">${UI.pts(p)}</div>
     ${locked ? '' : `<button class="ghost small" style="padding:2px 8px;margin-top:4px" onclick="event.stopPropagation();removePick('${l.id}')">entfernen</button>`}
   </div>`;
 }
@@ -58,18 +57,17 @@ function render() {
     <div class="stat"><div class="k">Echter PnL (MW-gewichtet)</div><div class="v ${UI.ptsClass(live ? pnl : null)}">${live ? (pnl >= 0 ? '+' : '−') + UI.money(Math.abs(pnl)) : '–'}</div></div>
     <div class="stat"><div class="k">Budget genutzt</div><div class="v">${UI.money(v.cost)}</div></div>`;
   const errs = v.errors.slice();
-  if (!team.captain && team.picks.length) errs.push('Kein Kapitän gewählt');
   document.getElementById('errors').innerHTML = errs.length && !locked ? `<div class="err">⚠️ ${errs.join(' · ')}</div>` : '';
 
   const lines = [['Sturm · Krypto', 'Krypto'], ['Mittelfeld · Aktien', 'Aktien'], ['Abwehr · Rohstoffe', 'Rohstoffe']];
   document.getElementById('pitch').innerHTML = `<div class="pitch">${lines.map(([lbl, cat]) => {
     const ls = team.picks.map(id => byId[id]).filter(l => l && l.cat === cat);
     return `<div class="line"><div class="lbl">${lbl}</div><div class="cards">${ls.length ? ls.map(l =>
-      card(l, pts[l.id] ?? null, l.id === team.captain)).join('') : '<div class="card empty">frei</div>'}</div></div>`;
+      card(l, pts[l.id] ?? null)).join('') : '<div class="card empty">frei</div>'}</div></div>`;
   }).join('')}</div>`;
   document.getElementById('hint').textContent = locked
     ? `Gesperrt seit ${UI.when(snap.start)}.` + (live ? ` Stand der Punkte: ${UI.when(live.asOf)} (stündlich).` : '')
-    : 'Tippe auf eine Karte, um sie zum Kapitän zu machen. Picks holst du im Transfermarkt.';
+    : 'Picks holst du im Transfermarkt.';
 
   const cats = G.GAME.CATS.map(c => team.picks.map(id => byId[id]).filter(l => l && l.cat === c).reduce((s, l) => s + l.mw, 0));
   const colors = ['#c6f432', '#60a5fa', '#fb923c'];
@@ -93,19 +91,17 @@ function render() {
   document.getElementById('actions').innerHTML = acts.join('');
 }
 
-function setCaptain(id) { if (locked) return; team.captain = id; UI.saveTeam(snap.id, team); render(); }
 function removePick(id) {
   if (locked) return;
   team.picks = team.picks.filter(x => x !== id);
-  if (team.captain === id) team.captain = null;
   UI.saveTeam(snap.id, team); render();
 }
-function clearTeam() { if (confirm('Aufstellung leeren?')) { team = { picks: [], captain: null }; UI.saveTeam(snap.id, team); render(); } }
+function clearTeam() { if (confirm('Aufstellung leeren?')) { team = { picks: [] }; UI.saveTeam(snap.id, team); render(); } }
 function copyLast() {
   const prev = UI.loadTeam(st.last.id);
   const picks = prev.picks.filter(id => byId[id]);
   if (!picks.length) { alert('Für die Vorwoche ist auf diesem Gerät kein Team gespeichert.'); return; }
-  team = { picks, captain: picks.includes(prev.captain) ? prev.captain : null };
+  team = { picks };
   UI.saveTeam(snap.id, team); render();
 }
 
