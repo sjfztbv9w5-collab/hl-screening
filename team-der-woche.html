@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<title>Signal-Liga · Team der Woche</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<header>
+  <div id="nav"></div>
+  <h1>Team der Woche <span id="form" style="color:var(--lime)"></span></h1>
+  <div class="chips"><select id="pick" aria-label="Spieltag"></select></div>
+</header>
+<main>
+  <div id="content"><div class="empty-msg">Lade…</div></div>
+</main>
+<script src="game-core.js"></script>
+<script src="game-ui.js"></script>
+<script>
+const G = GameCore;
+document.getElementById('nav').innerHTML = UI.nav('team-der-woche.html');
+let index = null;
+
+async function show(id) {
+  const el = document.getElementById('content');
+  el.innerHTML = '<div class="empty-msg">Lade…</div>';
+  const [snap, res] = await Promise.all([UI.tryJson(id + '.json'), UI.tryJson(id + '_result.json')]);
+  if (!snap || !res || !res.teamOfWeek) { el.innerHTML = '<div class="empty-msg">Für diesen Spieltag liegt keine Abrechnung vor.</div>'; return; }
+  const byId = Object.fromEntries(snap.listings.map(l => [l.id, l]));
+  const tdw = res.teamOfWeek, mine = UI.loadTeam(id), mineSet = new Set(mine.picks);
+  const myPts = G.teamPoints(mine, res.points);
+  const eff = myPts !== null && tdw.total > 0 ? Math.round(myPts / tdw.total * 100) : null;
+  document.getElementById('form').textContent = tdw.formation;
+
+  const lines = [['Sturm · Krypto', 'Krypto'], ['Mittelfeld · Aktien', 'Aktien'], ['Abwehr · Rohstoffe', 'Rohstoffe']];
+  const pitch = `<div class="pitch gold">${lines.map(([lbl, cat]) => {
+    const ls = tdw.picks.map(x => byId[x]).filter(l => l && l.cat === cat);
+    return `<div class="line"><div class="lbl">${lbl}</div><div class="cards">${ls.map(l => {
+      const p = res.points[l.id];
+      return `<div class="card ${mineSet.has(l.id) ? 'mine' : ''}">
+        <b>${UI.esc(l.label)}</b><span class="muted">${UI.mwFmt(l.mw)} · ${l.tech}</span>
+        <div class="p ${UI.ptsClass(p)}">${UI.pts(p)}</div>
+        <span class="small" style="color:${mineSet.has(l.id) ? 'var(--lime)' : 'var(--muted)'}">${mineSet.has(l.id) ? '✓ auch bei dir' : 'nicht bei dir'}</span></div>`;
+    }).join('')}</div></div>`;
+  }).join('')}<div class="small" style="text-align:center;color:#e9d9a6">Budget ${UI.money(tdw.cost)} von ${UI.money(G.GAME.BUDGET)} · gleiche Regeln wie dein Team</div></div>`;
+
+  const missed = tdw.picks.filter(x => !mineSet.has(x)).sort((a, b) => res.points[b] - res.points[a]).slice(0, 3);
+  const flops = mine.picks.filter(x => res.points[x] !== undefined).sort((a, b) => res.points[a] - res.points[b]).slice(0, 3);
+  const li = x => `<div class="li"><span>${UI.esc(byId[x] ? byId[x].label : x)} <span class="muted small">${byId[x] ? UI.mwFmt(byId[x].mw) : ''}</span></span><b class="${UI.ptsClass(res.points[x])}">${UI.pts(res.points[x])}</b></div>`;
+  const dist = { '✅': 0, '*️⃣': 0, '❔': 0, '⛔️': 0 };
+  tdw.picks.forEach(x => { if (byId[x]) dist[byId[x].tech]++; });
+
+  // Effizienz über alle abgerechneten Spieltage
+  const ids = index.results || [];
+  const all = await Promise.all(ids.map(r => UI.tryJson(r + '_result.json')));
+  const bars = ids.map((r, i) => {
+    const a = all[i]; if (!a || !a.teamOfWeek) return null;
+    const p = G.teamPoints(UI.loadTeam(r), a.points);
+    return { kw: r.slice(-2), e: p === null || a.teamOfWeek.total <= 0 ? null : Math.max(0, Math.round(p / a.teamOfWeek.total * 100)) };
+  }).filter(Boolean).slice(-10);
+  const maxE = Math.max(10, ...bars.map(b => b.e || 0));
+
+  el.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="k">Team der Woche</div><div class="v" style="color:var(--lime)">${UI.pts(tdw.total)}</div></div>
+      <div class="stat"><div class="k">Dein Team</div><div class="v ${UI.ptsClass(myPts)}">${UI.pts(myPts)}</div></div>
+      <div class="stat"><div class="k">Effizienz</div><div class="v">${eff === null ? '–' : eff + ' %'}</div></div>
+    </div>
+    <h2>Beste Aufstellung KW ${snap.kw}</h2>${pitch}
+    <h2>Größte verpasste Picks</h2><div class="panel list">${missed.length ? missed.map(li).join('') : '<span class="muted">Keine – perfekt getroffen.</span>'}</div>
+    <h2>Deine Fehlgriffe</h2><div class="panel list">${flops.length ? flops.map(li).join('') : '<span class="muted">Kein eigenes Team für diesen Spieltag auf diesem Gerät.</span>'}</div>
+    <h2>Duelle</h2><div class="panel list">
+      <div class="li"><b>Du</b><b class="${UI.ptsClass(myPts)}">${UI.pts(myPts)}</b></div>
+      <div class="li"><span>Algo-FC</span><b class="${UI.ptsClass(res.algoPoints)}">${UI.pts(res.algoPoints)}</b></div>
+      <div class="li"><span>Passiv-FC</span><b class="${UI.ptsClass(res.passivPoints)}">${UI.pts(res.passivPoints)}</b></div></div>
+    <h2>Emojis des Teams der Woche bei Abgabe</h2>
+    <div class="stats">${Object.entries(dist).map(([k, n]) => `<div class="stat"><div class="k">${k} ${G.TECH[k]}</div><div class="v">${n}</div></div>`).join('')}</div>
+    <p class="small muted">Nur zur Beobachtung über die Saison – die Technik fließt nicht in die Wertung ein.</p>
+    <h2>Effizienz je Spieltag</h2>
+    <div class="panel"><div style="display:flex;align-items:flex-end;gap:8px;height:90px">${bars.map(b => `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span class="small">${b.e === null ? '–' : b.e + ' %'}</span>
+        <div style="width:100%;border-radius:4px;background:var(--lime);height:${b.e ? Math.round(b.e / maxE * 56) : 2}px"></div>
+        <span class="small muted">KW ${b.kw}</span></div>`).join('')}</div></div>
+    <p class="small muted">Abgerechnet ${UI.when(res.settledAt)} · Effizienz = deine Punkte ÷ Punkte des Teams der Woche · Das Team der Woche wird nachträglich mit denselben Regeln optimal berechnet.</p>`;
+}
+
+(async () => {
+  index = await UI.tryJson('index.json');
+  const ids = ((index && index.results) || []).slice().reverse();
+  const sel = document.getElementById('pick');
+  if (!ids.length) { document.getElementById('content').innerHTML = '<div class="empty-msg">Noch kein Spieltag abgerechnet. Die erste Abrechnung kommt am Samstag um 20:00.</div>'; sel.style.display = 'none'; return; }
+  sel.innerHTML = ids.map(id => `<option value="${id}">Spieltag KW ${id.slice(-2)} (${id.slice(0, 4)})</option>`).join('');
+  sel.onchange = () => show(sel.value);
+  show(ids[0]);
+})();
+</script>
+</body>
+</html>

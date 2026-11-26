@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<title>Signal-Liga · Aufstellung</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<header>
+  <div id="nav"></div>
+  <h1>Aufstellung <span id="form" style="color:var(--lime)"></span></h1>
+  <div id="banner"></div>
+</header>
+<main>
+  <div class="stats" id="stats"></div>
+  <div id="errors"></div>
+  <h2>Team</h2>
+  <div id="pitch"></div>
+  <p class="small muted" id="hint"></p>
+  <div id="actions" class="chips"></div>
+  <h2>Budget</h2>
+  <div id="budget"></div>
+  <h2>Duelle</h2>
+  <div class="panel list" id="duels"></div>
+  <h2>Saison</h2>
+  <div class="stats" id="season"></div>
+  <p class="small muted">Punkte = Wochen-% × 100 je Listing (▼ Short zählt die Gegenbewegung), Team-Punkte = Summe aller 10 Picks. Echter PnL = Positionen in MW-Größe ohne Hebel.</p>
+</main>
+<script src="game-core.js"></script>
+<script src="game-ui.js"></script>
+<script>
+const G = GameCore;
+document.getElementById('nav').innerHTML = UI.nav('aufstellung.html');
+let st, snap, team, live, byId, locked;
+
+function card(l, p) {
+  return `<div class="card">
+    <b>${UI.esc(l.label)}</b><span class="muted">${UI.mwFmt(l.mw)} · ${l.tech}</span>
+    <div class="p ${UI.ptsClass(p)}">${UI.pts(p)}</div>
+    ${locked ? '' : `<button class="ghost small" style="padding:2px 8px;margin-top:4px" onclick="event.stopPropagation();removePick('${l.id}')">entfernen</button>`}
+  </div>`;
+}
+
+function render() {
+  const v = G.validateTeam(team.picks, snap.listings);
+  document.getElementById('form').textContent = team.picks.length ? v.formation : '';
+  const pts = live ? live.points : {};
+  const total = G.teamPoints(team, pts);
+  let pnl = 0;
+  team.picks.forEach(id => { const p = pts[id]; if (p !== undefined && byId[id]) pnl += byId[id].mw * p / 10000; });
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="k">${live ? 'Live-Punkte' : 'Punkte'}</div><div class="v ${UI.ptsClass(total)}">${UI.pts(total)}</div></div>
+    <div class="stat"><div class="k">Echter PnL (MW-gewichtet)</div><div class="v ${UI.ptsClass(live ? pnl : null)}">${live ? (pnl >= 0 ? '+' : '−') + UI.money(Math.abs(pnl)) : '–'}</div></div>
+    <div class="stat"><div class="k">Budget genutzt</div><div class="v">${UI.money(v.cost)}</div></div>`;
+  const errs = v.errors.slice();
+  document.getElementById('errors').innerHTML = errs.length && !locked ? `<div class="err">⚠️ ${errs.join(' · ')}</div>` : '';
+
+  const lines = [['Sturm · Krypto', 'Krypto'], ['Mittelfeld · Aktien', 'Aktien'], ['Abwehr · Rohstoffe', 'Rohstoffe']];
+  document.getElementById('pitch').innerHTML = `<div class="pitch">${lines.map(([lbl, cat]) => {
+    const ls = team.picks.map(id => byId[id]).filter(l => l && l.cat === cat);
+    return `<div class="line"><div class="lbl">${lbl}</div><div class="cards">${ls.length ? ls.map(l =>
+      card(l, pts[l.id] ?? null)).join('') : '<div class="card empty">frei</div>'}</div></div>`;
+  }).join('')}</div>`;
+  document.getElementById('hint').textContent = locked
+    ? `Gesperrt seit ${UI.when(snap.start)}.` + (live ? ` Stand der Punkte: ${UI.when(live.asOf)} (stündlich).` : '')
+    : 'Picks holst du im Transfermarkt.';
+
+  const cats = G.GAME.CATS.map(c => team.picks.map(id => byId[id]).filter(l => l && l.cat === c).reduce((s, l) => s + l.mw, 0));
+  const colors = ['#c6f432', '#60a5fa', '#fb923c'];
+  document.getElementById('budget').innerHTML = `<div class="bar">${cats.map((c, i) =>
+    `<div style="width:${c / G.GAME.BUDGET * 100}%;background:${colors[i]}"></div>`).join('')}</div>
+    <div class="chips small">${cats.map((c, i) => `<span><span style="color:${colors[i]}">■</span> ${G.GAME.CATS[i]} ${UI.money(c)}</span>`).join(' ')}
+    <span class="muted">Rest ${UI.money(G.GAME.BUDGET - v.cost)}</span></div>`;
+
+  const duel = (name, t, note) => `<div class="li"><span>${name}<br><span class="small muted">${note}</span></span><b class="${UI.ptsClass(live ? G.teamPoints(t, pts) : null)}">${live ? UI.pts(G.teamPoints(t, pts)) : '–'}</b></div>`;
+  document.getElementById('duels').innerHTML =
+    `<div class="li"><b>Du</b><b class="${UI.ptsClass(total)}">${UI.pts(total)}</b></div>` +
+    duel('Algo-FC', snap.algo, snap.algo ? `Bestes Team nach Signal-Score · ${snap.algo.formation}` : 'nicht verfügbar') +
+    duel('Passiv-FC', snap.passiv, '10 teuerste Listings ▲ Long');
+
+  const acts = [];
+  if (!locked) {
+    acts.push(`<a class="chip" style="text-decoration:none" href="transfermarkt.html">Zum Transfermarkt</a>`);
+    acts.push(`<button class="chip" onclick="copyLast()">Team der Vorwoche übernehmen</button>`);
+    if (team.picks.length) acts.push(`<button class="chip" onclick="clearTeam()">Leeren</button>`);
+  }
+  document.getElementById('actions').innerHTML = acts.join('');
+}
+
+function removePick(id) {
+  if (locked) return;
+  team.picks = team.picks.filter(x => x !== id);
+  UI.saveTeam(snap.id, team); render();
+}
+function clearTeam() { if (confirm('Aufstellung leeren?')) { team = { picks: [] }; UI.saveTeam(snap.id, team); render(); } }
+function copyLast() {
+  const prev = UI.loadTeam(st.last.id);
+  const picks = prev.picks.filter(id => byId[id]);
+  if (!picks.length) { alert('Für die Vorwoche ist auf diesem Gerät kein Team gespeichert.'); return; }
+  team = { picks };
+  UI.saveTeam(snap.id, team); render();
+}
+
+async function season(index) {
+  const ids = (index && index.results) || [];
+  const res = await Promise.all(ids.map(id => UI.tryJson(id + '_result.json')));
+  let total = 0, n = 0, wins = 0, effs = [], best = null;
+  res.forEach((r, i) => {
+    if (!r) return;
+    const t = UI.loadTeam(ids[i]);
+    const p = G.teamPoints(t, r.points);
+    if (p === null) return;
+    n++; total += p; best = best === null ? p : Math.max(best, p);
+    if (r.algoPoints !== null && p > r.algoPoints) wins++;
+    if (r.teamOfWeek && r.teamOfWeek.total > 0) effs.push(p / r.teamOfWeek.total);
+  });
+  document.getElementById('season').innerHTML = n ? `
+    <div class="stat"><div class="k">Gesamt (${n} Spieltage)</div><div class="v ${UI.ptsClass(total)}">${UI.pts(total)}</div></div>
+    <div class="stat"><div class="k">Ø / Spieltag</div><div class="v">${UI.pts(Math.round(total / n))}</div></div>
+    <div class="stat"><div class="k">Siege vs Algo-FC</div><div class="v">${wins} / ${n}</div></div>
+    <div class="stat"><div class="k">Beste Woche</div><div class="v">${UI.pts(best)}</div></div>
+    <div class="stat"><div class="k">Ø Effizienz</div><div class="v">${effs.length ? UI.nf(effs.reduce((a, b) => a + b, 0) / effs.length * 100) + ' %' : '–'}</div></div>`
+    : '<div class="muted small">Noch kein abgerechneter Spieltag mit eigenem Team auf diesem Gerät.</div>';
+}
+
+(async () => {
+  st = G.gameState();
+  document.getElementById('banner').innerHTML = UI.phaseBanner(st);
+  const [s, index, l] = await Promise.all([UI.tryJson(st.active.id + '.json'), UI.tryJson('index.json'), UI.tryJson('live.json')]);
+  snap = s;
+  if (!snap) { document.getElementById('pitch').innerHTML = '<div class="empty-msg">Für diesen Spieltag gibt es noch keinen Transfermarkt.</div>'; season(index); return; }
+  byId = Object.fromEntries(snap.listings.map(x => [x.id, x]));
+  locked = Date.now() >= snap.start;
+  live = locked && l && l.id === snap.id ? l : null;
+  team = UI.loadTeam(snap.id);
+  render();
+  season(index);
+})();
+</script>
+</body>
+</html>

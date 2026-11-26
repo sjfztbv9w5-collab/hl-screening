@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<title>Signal-Liga · Regelwerk</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<header>
+  <div id="nav"></div>
+  <h1>Regelwerk</h1>
+</header>
+<main class="rules">
+  <div class="rule"><span class="n">1</span><div><b>Spieltag (Berliner Zeit)</b>
+    <ul>
+      <li>Abgabe der Aufstellung bis <b>Mo 12:00</b> – Einstieg zum Kurs dieser Stunde (Eröffnung der 1h-Kerze).</li>
+      <li>Abrechnung <b>Sa 20:00</b> – Ausstieg zum Kurs dieser Stunde, für alle Kategorien. Aktien und Rohstoffe laufen über das Wochenende weiter.</li>
+      <li>Sa 20:00 – Mo 12:00 Spielpause: Ergebnis checken, neu aufstellen. Marktwerte, Form und Technik werden nach der Abrechnung eingefroren und bleiben bis Mo 12:00 fest.</li>
+      <li>Kein Wechsel während des Spieltags.</li>
+    </ul></div></div>
+  <div class="rule"><span class="n">2</span><div><b>Marktwert (MW)</b>
+    <p>Liquidität L = Ø-Tagesvolumen der letzten 7 Tage + Open Interest. MW = 500 $ × L ÷ Summe L der eigenen Kategorie, mindestens 5 $, auf 0,5 $ gerundet. Pro Kategorie, weil Aktien und Rohstoffe neben BTC sonst alle Centbeträge wären. Es spielen alle Märkte mit, die der Screener bewertet (≥ 1 Mio $ Volumen und Open Interest); dasselbe Underlying auf mehreren HIP-3-Börsen zählt einmal (das liquideste). Devisen spielen nicht mit.</p></div></div>
+  <div class="rule"><span class="n">3</span><div><b>Punkte</b>
+    <p>Wochen-Performance des Listings in % × 100 (+4,2 % = +420). Beim ▼ Short-Listing zählt die Gegenbewegung (Kurs −3 % = +300). Team-Punkte = Summe der 10 Picks. Kein Kapitän, kein Punktedeckel.</p></div></div>
+  <div class="rule"><span class="n">4</span><div><b>Kader</b>
+    <p>Jedes Asset hat zwei Listings, ▲ Long und ▼ Short – gleicher MW, eigene Form, eigene Technik. Das Long-Short-Verhältnis ist frei, gesucht ist nur das beste Team. 10 Picks, max. 500 $, jedes Listing einmal.</p>
+    <p>Formation Krypto-Aktien-Rohstoffe: 4-4-2 · 4-3-3 · 3-4-3 · 5-3-2 · 3-5-2 · 4-5-1 · 5-4-1. Kategorien: Krypto = Haupt-Börse; Rohstoffe = Metalle, Öl, Gas; Aktien = alle übrigen HIP-3-Märkte inkl. Pre-IPO, Indizes und ETFs.</p></div></div>
+  <div class="rule"><span class="n">5</span><div><b>Ø-Punkte 4 W &amp; Preis-Leistung</b>
+    <p>Ø der Punkte der letzten 4 Spieltage je Listing, Form als 4 Balken. Pkt/10 $ = Ø-Punkte ÷ (MW ÷ 10): die Schnäppchen-Kennzahl.</p></div></div>
+  <div class="rule"><span class="n">6</span><div><b>Technik aus dem Signal-Tool</b>
+    <p>Unabhängige zweite Meinung neben Form und Punkten: beschreibt nur den Zustand der Signale, ist keine Prognose für die kommende Woche und fließt nicht in die Wertung ein. Grundlage ist der stündliche Netto-Score des Screeners (Long-Score + Short-Score), je Kalendertag gemittelt.</p>
+    <ul>
+      <li>✅ stark: Ø der letzten 21 Tage ≥ +0,5 und an ≥ 70 % der Tage positiv</li>
+      <li>⛔️ Totalausfall: Ø der letzten 21 Tage ≤ −0,5 und an ≥ 70 % der Tage negativ</li>
+      <li>*️⃣ solide: Ø der letzten 14 Tage ≥ +0,2 mit höchstens 4 Richtungswechseln</li>
+      <li>❔ wechselhaft: alles andere</li>
+    </ul>
+    <p>▼ Short-Listings werden mit dem gespiegelten Score bewertet: Long ⛔️ ⇔ Short ✅ und Long ✅ ⇔ Short ⛔️. Ein Long *️⃣ ist als Short ❔; ein wechselhaftes Asset kann auf beiden Seiten ❔ sein.</p></div></div>
+  <div class="rule"><span class="n">7</span><div><b>Gegner</b>
+    <p>Algo-FC: bestes Team unter Budget und Formation nach dem letzten Tages-Score (Long wie Short). Passiv-FC: die 10 teuersten ▲ Long-Listings. So siehst du, ob deine Auswahl mehr bringt als das Tool allein.</p></div></div>
+  <div class="rule"><span class="n">8</span><div><b>Team der Woche</b>
+    <p>Nach jeder Abrechnung wird rückblickend die bestmögliche Aufstellung berechnet – gleiche Regeln, 500 $, alle Formationen. Effizienz = deine Punkte ÷ Punkte des Teams der Woche.</p></div></div>
+  <div class="rule"><span class="n">9</span><div><b>Daten &amp; Speicherung</b>
+    <p>Transfermarkt, Einstiegskurse, Live-Punkte und Abrechnung berechnet der stündliche Screener-Lauf und legt sie im Daten-Branch ab. Kurse stammen immer aus der 1h-Kerze zum exakten Zeitpunkt – ein verspäteter Lauf ändert nichts. Deine Aufstellungen werden nur in diesem Browser gespeichert.</p></div></div>
+</main>
+<script src="game-core.js"></script>
+<script src="game-ui.js"></script>
+<script>document.getElementById('nav').innerHTML = UI.nav('regelwerk.html');</script>
+</body>
+</html>
