@@ -30,6 +30,7 @@
   <div class="stats" id="season"></div>
   <p class="small muted">Punkte = Wochen-% × 100 je Listing (▼ Short zählt die Gegenbewegung), Team-Punkte = Summe aller 10 Picks. Echter PnL = Positionen in MW-Größe ohne Hebel.</p>
 </main>
+<script src="screen-core.js"></script>
 <script src="game-core.js"></script>
 <script src="game-ui.js"></script>
 <script>
@@ -66,7 +67,7 @@ function render() {
       card(l, pts[l.id] ?? null)).join('') : '<div class="card empty">frei</div>'}</div></div>`;
   }).join('')}</div>`;
   document.getElementById('hint').textContent = locked
-    ? `Gesperrt seit ${UI.when(snap.start)}.` + (live ? ` Stand der Punkte: ${UI.when(live.asOf)} (stündlich).` : '')
+    ? `Gesperrt seit ${UI.when(snap.start)}.` + (live ? ` Stand der Punkte: ${UI.when(live.asOf)}.` : '')
     : 'Picks holst du im Transfermarkt.';
 
   const cats = G.GAME.CATS.map(c => team.picks.map(id => byId[id]).filter(l => l && l.cat === c).reduce((s, l) => s + l.mw, 0));
@@ -138,6 +139,10 @@ async function season(index) {
   live = locked && l && l.id === snap.id ? l : null;
   team = UI.loadTeam(snap.id);
   render();
+  if (locked && st.phase === 'live') {
+    const w = await UI.weekPoints(st);
+    if (w && w.id === snap.id) { live = w; render(); }
+  }
   season(index);
 })();
 </script>

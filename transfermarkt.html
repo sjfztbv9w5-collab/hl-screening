@@ -20,32 +20,41 @@
   <div class="chips" id="catChips"></div>
   <div class="chips">
     <span id="dirChips" style="display:contents"></span>
-    <select id="sort" aria-label="Sortierung">
-      <option value="avg">Sortierung: Ø-Score pro Woche</option>
-      <option value="mw">Marktwert</option>
-      <option value="ppd">Punkte pro 10 $</option>
-      <option value="tech">Technik</option>
-    </select>
     <input type="search" id="q" placeholder="Suchen" aria-label="Suchen">
   </div>
-  <div class="row head"><span>Listing</span><span class="r">MW</span><span class="r">Ø/Woche</span><span>Form</span><span class="c">Tech</span><span class="r ppd">Pkt/10$</span><span></span></div>
+  <div class="row head" id="head"></div>
   <div id="list"><div class="empty-msg">Lade Transfermarkt…</div></div>
   <p class="small muted" id="foot"></p>
 </main>
+<script src="screen-core.js"></script>
 <script src="game-core.js"></script>
 <script src="game-ui.js"></script>
 <script>
 const G = GameCore;
 document.getElementById('nav').innerHTML = UI.nav('transfermarkt.html');
-const state = { cat: 'Alle', dir: 'Alle', sort: 'avg', q: '' };
-let snap = null, st = null, team = null, locked = false;
+const state = { cat: 'Alle', dir: 'Alle', sort: 'avg', desc: true, q: '' };
+let snap = null, st = null, team = null, locked = false, week = null;
 const TECH_ORDER = { '✅': 0, '*️⃣': 1, '❔': 2, '⛔️': 3 };
 
 function chips(el, values, key) {
   document.getElementById(el).innerHTML = values.map(([v, l]) =>
     `<button class="chip ${state[key] === v ? 'on' : ''}" onclick="state['${key}']='${v}';render()">${l}</button>`).join('');
 }
-const ppd = l => (l.avg === null ? null : l.avg / (l.mw / 10));
+const wk = l => (week && week.points[l.id] !== undefined ? week.points[l.id] : null);
+// Spalten: Schlüssel, Titel, CSS-Klasse, Sortierwert, Standardrichtung absteigend?
+const COLS = [
+  ['label', 'Listing', '', l => l.label.toLowerCase(), false],
+  ['mw', 'MW', 'r', l => l.mw, true],
+  ['avg', 'Ø/Woche', 'r', l => l.avg, true],
+  ['week', 'Woche', 'r', wk, true],
+  ['form', 'Form', 'formcol', l => (l.form || []).filter(v => v !== null).slice(-1)[0] ?? null, true],
+  ['tech', 'Tech', 'c', l => -TECH_ORDER[l.tech], true]
+];
+function sortBy(k) {
+  const col = COLS.find(c => c[0] === k);
+  if (state.sort === k) state.desc = !state.desc; else { state.sort = k; state.desc = col[4]; }
+  render();
+}
 
 function render() {
   chips('catChips', [['Alle', 'Alle'], ['Krypto', 'Krypto'], ['Aktien', 'Aktien'], ['Rohstoffe', 'Rohstoffe']], 'cat');
@@ -59,18 +68,27 @@ function render() {
   const q = state.q.trim().toUpperCase();
   let rows = snap.listings.filter(l => (state.cat === 'Alle' || l.cat === state.cat) && (state.dir === 'Alle' || l.dir === state.dir)
     && (!q || l.label.toUpperCase().includes(q)));
-  const key = { mw: l => -l.mw, avg: l => -(l.avg ?? -1e9), ppd: l => -(ppd(l) ?? -1e9), tech: l => TECH_ORDER[l.tech] * 1e6 - l.mw }[state.sort];
-  rows.sort((a, b) => key(a) - key(b));
+  const col = COLS.find(c => c[0] === state.sort), val = col[3];
+  rows.sort((a, b) => {
+    const x = val(a), y = val(b);
+    if (x === null || x === undefined) return (y === null || y === undefined) ? 0 : 1;   // ohne Wert immer ans Ende
+    if (y === null || y === undefined) return -1;
+    const c = typeof x === 'string' ? x.localeCompare(y) : x - y;
+    return state.desc ? -c : c;
+  });
+  const wl = week ? week.label.replace('KW ', 'KW') : 'Woche';
+  document.getElementById('head').innerHTML = COLS.map(([k, t, cls]) =>
+    `<button class="sort ${cls} ${state.sort === k ? 'on' : ''}" onclick="sortBy('${k}')">${k === 'week' ? wl : t}${state.sort === k ? (state.desc ? ' ▼' : ' ▲') : ''}</button>`).join('') + '<span></span>';
   const sel = new Set(team.picks);
   document.getElementById('list').innerHTML = rows.length ? rows.map(l => {
-    const on = sel.has(l.id), p = ppd(l);
+    const on = sel.has(l.id);
     return `<div class="row ${on ? 'sel' : ''}">
       <div class="name"><b>${UI.esc(l.label)}</b><span>${l.cat}${l.dex ? ' · ' + UI.esc(l.dex) : ''}</span></div>
       <span class="r"><b>${UI.mwFmt(l.mw)}</b></span>
       <span class="r ${UI.ptsClass(l.avg)}">${UI.pts(l.avg)}</span>
-      ${UI.formBars(l.form)}
+      <span class="r ${UI.ptsClass(wk(l))}"><b>${UI.pts(wk(l))}</b></span>
+      <span class="formcol">${UI.formBars(l.form)}</span>
       <span class="c" title="${G.TECH[l.tech]}">${l.tech}</span>
-      <span class="r ppd">${p === null ? '–' : UI.nf(p)}</span>
       <button class="add ${on ? 'on' : ''}" ${locked ? 'disabled' : ''} aria-label="${on ? 'Aus dem Team entfernen' : 'Ins Team holen'}" onclick="toggle('${l.id}')">${on ? '✓' : '+'}</button>
     </div>`;
   }).join('') : '<div class="empty-msg">Keine Treffer.</div>';
@@ -88,7 +106,6 @@ function toggle(id) {
   render();
 }
 
-document.getElementById('sort').onchange = e => { state.sort = e.target.value; render(); };
 document.getElementById('q').oninput = e => { state.q = e.target.value; render(); };
 
 (async () => {
@@ -105,7 +122,12 @@ document.getElementById('q').oninput = e => { state.q = e.target.value; render()
   document.getElementById('foot').innerHTML =
     `Eingefroren ${UI.when(snap.frozenAt)}${snap.late ? ' (nachträglich erstellt)' : ''} · Ø/Woche = Durchschnitt der Scores der letzten 4 Spieltage (${snap.formIds.map(x => 'KW ' + x.slice(-2)).join(', ')}), Form = diese 4 Scores einzeln · ` +
     `Technik ist eine unabhängige Einschätzung der Signale, keine Punkteprognose · Deine Aufstellung wird nur auf diesem Gerät gespeichert.` +
-    (locked ? ' · Spieltag läuft: Transfers gesperrt.' : '');
+    (locked ? ' · Spieltag läuft: Transfers gesperrt.' : '') +
+    ' · Spaltenköpfe antippen zum Sortieren (erneut antippen dreht die Richtung).';
+  render();
+  week = await UI.weekPoints(st);
+  if (week) document.getElementById('foot').innerHTML += ` · ${UI.esc(week.label)}: ${week.final ? 'Abrechnung' : 'Stand'} ${UI.when(week.asOf)}` +
+    (week.final ? '' : ' (Einstieg Mo 12:00 bis jetzt)');
   render();
 })();
 </script>

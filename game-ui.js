@@ -49,5 +49,34 @@ const UI = (() => {
     }).join('') + '</span>';
   }
 
-  return { G, getJson, tryJson, loadTeam, saveTeam, nf, money, mwFmt, pts, ptsClass, when, esc, nav, phaseBanner, formBars };
+  // Scores der Woche: im laufenden Spieltag live aus aktuellen Hyperliquid-Kursen (Einstieg Mo 12:00),
+  // in der Pause die Abrechnung des letzten Spieltags. Rückfall: live.json aus dem stündlichen Job.
+  async function weekPoints(st) {
+    const id = st.phase === 'live' ? st.active.id : st.last.id;
+    const kw = id.slice(-2);
+    if (st.phase === 'pause') {
+      const res = await tryJson(id + '_result.json');
+      if (res) return { id, label: 'KW ' + kw + ' final', points: res.points, asOf: res.settledAt, final: true };
+    }
+    const lj = await tryJson('live.json');
+    const points = lj && lj.id === id ? { ...lj.points } : {};
+    let asOf = lj && lj.id === id ? lj.asOf : null;
+    if (st.phase === 'live' && typeof getUniverseAndCtxs === 'function') {
+      const [entry, snap] = await Promise.all([tryJson(id + '_entry.json'), tryJson(id + '.json')]);
+      if (entry && snap) {
+        try {
+          const mark = Object.fromEntries((await getUniverseAndCtxs()).map(a => [a.name, a.markPx]));
+          snap.listings.forEach(l => {
+            const p = G.pointsFor(entry.prices[l.name], mark[l.name], l.dir);
+            if (p !== null) points[l.id] = p;
+          });
+          asOf = Date.now();
+        } catch (e) { /* Hyperliquid nicht erreichbar: Stand des Jobs */ }
+      }
+    }
+    if (!asOf) return null;
+    return { id, label: 'KW ' + kw + (st.phase === 'live' ? ' live' : ''), points, asOf, final: false };
+  }
+
+  return { G, getJson, weekPoints, tryJson, loadTeam, saveTeam, nf, money, mwFmt, pts, ptsClass, when, esc, nav, phaseBanner, formBars };
 })();
