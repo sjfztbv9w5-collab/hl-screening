@@ -40,7 +40,6 @@ function chips(el, values, key) {
   document.getElementById(el).innerHTML = values.map(([v, l]) =>
     `<button class="chip ${state[key] === v ? 'on' : ''}" onclick="state['${key}']='${v}';render()">${l}</button>`).join('');
 }
-const ppd = l => (l.avg === null ? null : l.avg / (l.mw / 10));
 const wk = l => (week && week.points[l.id] !== undefined ? week.points[l.id] : null);
 // Spalten: Schlüssel, Titel, CSS-Klasse, Sortierwert, Standardrichtung absteigend?
 const COLS = [
@@ -49,8 +48,7 @@ const COLS = [
   ['avg', 'Ø/Woche', 'r', l => l.avg, true],
   ['week', 'Woche', 'r', wk, true],
   ['form', 'Form', 'formcol', l => (l.form || []).filter(v => v !== null).slice(-1)[0] ?? null, true],
-  ['tech', 'Tech', 'c', l => -TECH_ORDER[l.tech], true],
-  ['ppd', 'Pkt/10$', 'r ppd', ppd, true]
+  ['tech', 'Tech', 'c', l => -TECH_ORDER[l.tech], true]
 ];
 function sortBy(k) {
   const col = COLS.find(c => c[0] === k);
@@ -83,7 +81,7 @@ function render() {
     `<button class="sort ${cls} ${state.sort === k ? 'on' : ''}" onclick="sortBy('${k}')">${k === 'week' ? wl : t}${state.sort === k ? (state.desc ? ' ▼' : ' ▲') : ''}</button>`).join('') + '<span></span>';
   const sel = new Set(team.picks);
   document.getElementById('list').innerHTML = rows.length ? rows.map(l => {
-    const on = sel.has(l.id), p = ppd(l);
+    const on = sel.has(l.id);
     return `<div class="row ${on ? 'sel' : ''}">
       <div class="name"><b>${UI.esc(l.label)}</b><span>${l.cat}${l.dex ? ' · ' + UI.esc(l.dex) : ''}</span></div>
       <span class="r"><b>${UI.mwFmt(l.mw)}</b></span>
@@ -91,7 +89,6 @@ function render() {
       <span class="r ${UI.ptsClass(wk(l))}"><b>${UI.pts(wk(l))}</b></span>
       <span class="formcol">${UI.formBars(l.form)}</span>
       <span class="c" title="${G.TECH[l.tech]}">${l.tech}</span>
-      <span class="r ppd">${p === null ? '–' : UI.nf(p)}</span>
       <button class="add ${on ? 'on' : ''}" ${locked ? 'disabled' : ''} aria-label="${on ? 'Aus dem Team entfernen' : 'Ins Team holen'}" onclick="toggle('${l.id}')">${on ? '✓' : '+'}</button>
     </div>`;
   }).join('') : '<div class="empty-msg">Keine Treffer.</div>';
